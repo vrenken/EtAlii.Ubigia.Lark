@@ -4,6 +4,13 @@ namespace EtAlii.Ubigia.Lark;
 
 public partial class LarkParser
 {
+    /// Parses the contents of the provided stream and returns an array of parsed items.
+    /// <param name="stream">
+    /// The input stream containing the data to be parsed.
+    /// </param>
+    /// <returns>
+    /// An array of parsed items derived from the input stream.
+    /// </returns>
     public static Item[] Parse(Stream stream)
     {
         var inputStream = new AntlrInputStream(stream);
