@@ -16,16 +16,17 @@ public class UnitTests
 
         // Assert.
         Assert.NotEmpty(tree);
-        var sb = new StringBuilder();
-        foreach (var item in tree)
-        {
-            sb.AppendLine(item.ToString());
-        }
-        var actualDump = sb.ToString();
 
         var dmpFile = Path.ChangeExtension(fileName, "dmp");
         if (File.Exists(dmpFile))
         {
+            var sb = new StringBuilder();
+            foreach (var item in tree)
+            {
+                sb.AppendLine(item.ToString());
+            }
+            var actualDump = sb.ToString();
+
             var expectedDump = File.ReadAllText(dmpFile);
             Assert.Equal(expectedDump, actualDump);
         }
