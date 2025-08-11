@@ -9,6 +9,6 @@ public record Alias
     {
         return string.IsNullOrWhiteSpace(Rule)
             ? $"{Expansion}"
-            : $"{Expansion} => {Rule}";
+            : $"{Expansion} -> {Rule}";
     }
 }

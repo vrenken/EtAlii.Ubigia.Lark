@@ -10,7 +10,7 @@ public record ImportStatement : Statement
         return Names.Length switch
         {
             0 => $"%import {Path}",
-            1 => $"%import {Path} => {Names[0]}",
+            1 => $"%import {Path} -> {Names[0]}",
             _ => $"%import {Path} ({string.Join(',', Names)})"
         };
     }
