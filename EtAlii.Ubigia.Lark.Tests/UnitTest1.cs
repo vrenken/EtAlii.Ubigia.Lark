@@ -27,6 +27,6 @@ public class UnitTest1
         var tree = LarkParser.Parse(content);
 
         // Assert.
+        Assert.NotEmpty(tree);
     }
-
 }
