@@ -1,0 +1,4 @@
+﻿c red yellow
+fill { repeat 36 {
+    f200 l170
+}}

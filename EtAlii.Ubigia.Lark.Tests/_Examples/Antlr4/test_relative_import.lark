@@ -1,0 +1,6 @@
+﻿start: NUMBER WORD
+
+%import .grammars.test.NUMBER
+%import common.WORD
+%import common.WS
+%ignore WS
