@@ -156,6 +156,12 @@ public class LarkParserVisitor : LarkParserBaseVisitor<object>
     }
 
     /// <inheritdoc />
+    public override object VisitToken_params(LarkParser.Token_paramsContext context)
+    {
+        return context.TOKEN().Select(r => r.GetText()).ToArray();
+    }
+
+    /// <inheritdoc />
     public override object VisitName(LarkParser.NameContext context)
     {
         return context.GetText();
