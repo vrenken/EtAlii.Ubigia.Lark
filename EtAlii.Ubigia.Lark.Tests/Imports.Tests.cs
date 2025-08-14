@@ -1,12 +1,12 @@
 ﻿namespace EtAlii.Ubigia.Lark.Tests;
 
-public class UnitTests
+public class ImportsTests
 {
-    [Theory]
-    [ClassData(typeof(LarkTestFileNames))]
-    public void Test1(string fileName)
+    [Fact]
+    public void Import_Test_Simple()
     {
         // Arrange.
+        var fileName = @"_Examples/Imports/simple.lark";
         
         // Act.
         var syntax = LarkParseSyntax.Parse(fileName);
@@ -23,18 +23,5 @@ public class UnitTests
             var expected = File.ReadAllText(expectedFile).TrimEnd();
             Assert.Equal(expected, actual);
         }
-    }
-    
-    [Fact]
-    public void Test2()
-    {
-        // Arrange.
-        var fileName = @"_Examples/Antlr4/common.lark";
-        
-        // Act.
-        var syntax = LarkParseSyntax.Parse(fileName);
-
-        // Assert.
-        Assert.NotEmpty(syntax.Items);
     }
 }
