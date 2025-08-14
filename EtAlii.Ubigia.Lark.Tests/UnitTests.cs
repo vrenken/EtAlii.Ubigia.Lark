@@ -12,23 +12,19 @@ public class UnitTests
         var content = File.OpenRead(fileName);
         
         // Act.
-        var tree = LarkParser.Parse(content);
+        var syntax = LarkParseSyntax.Parse(content);
 
         // Assert.
-        Assert.NotEmpty(tree);
+        Assert.True(syntax.IsValid);
+        Assert.Empty(syntax.Errors);
+        Assert.NotEmpty(syntax.Items);
 
         var dmpFile = Path.ChangeExtension(fileName, "dmp");
         if (File.Exists(dmpFile))
         {
-            var sb = new StringBuilder();
-            foreach (var item in tree)
-            {
-                sb.AppendLine(item.ToString());
-            }
-            var actualDump = sb.ToString();
-
-            var expectedDump = File.ReadAllText(dmpFile);
-            Assert.Equal(expectedDump, actualDump);
+            var actual = syntax.Text;
+            var expected = File.ReadAllText(dmpFile).TrimEnd();
+            Assert.Equal(expected, actual);
         }
     }
     
@@ -40,9 +36,9 @@ public class UnitTests
         var content = File.OpenRead(fileName);
         
         // Act.
-        var tree = LarkParser.Parse(content);
+        var syntax = LarkParseSyntax.Parse(content);
 
         // Assert.
-        Assert.NotEmpty(tree);
+        Assert.NotEmpty(syntax.Items);
     }
 }
