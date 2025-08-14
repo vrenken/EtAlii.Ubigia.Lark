@@ -1,8 +1,9 @@
-﻿using Antlr4.Runtime;
+﻿using System.Text;
+using Antlr4.Runtime;
 
 namespace EtAlii.Ubigia.Lark;
 
-public partial class LarkParser
+public partial class LarkParseSyntax
 {
     /// Parses the contents of the provided stream and returns an array of parsed items.
     /// <param name="stream">
@@ -11,7 +12,7 @@ public partial class LarkParser
     /// <returns>
     /// An array of parsed items derived from the input stream.
     /// </returns>
-    public static Item[] Parse(Stream stream)
+    public static LarkParseSyntax Parse(Stream stream)
     {
         var inputStream = new AntlrInputStream(stream);
 
@@ -24,8 +25,24 @@ public partial class LarkParser
         var tree = parser.start_();
         //parser.CompileParseTreePattern()
         var visitor = new LarkParserVisitor();
-        return (Item[])visitor.VisitStart_(tree);
-        //parser.RemoveErrorListeners();
-        //parser.AddErrorListener(new LarkParserErrorListener()); // add ours
+        var items = (Item[])visitor.VisitStart_(tree);
+
+        var errorListener = new LarkParserErrorListener();
+        parser.RemoveErrorListeners();
+        parser.AddErrorListener(errorListener); // add ours
+        
+        var sb = new StringBuilder();
+        foreach (var item in items)
+        {
+            sb.AppendLine(item.ToString());
+        }
+
+        return new LarkParseSyntax
+        {
+            IsValid = errorListener.Errors.Count == 0,
+            Errors = errorListener.Errors.ToArray(),
+            Items = items,
+            Text = sb.ToString().TrimEnd()
+        };
     }
 }

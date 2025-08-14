@@ -6,6 +6,6 @@ public record ParametersAtom : Atom
     
     public override string ToString()
     {
-        return $"({string.Join(" | ", Expansions.Select(e => e.ToString()))})*";
+        return $"({string.Join(" | ", Expansions.Select(e => e.ToString()))})";
     }
 }

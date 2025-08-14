@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Antlr4 Include="Antlr\*.g4" >
+      <Antlr4 Include="Syntax\Antlr\*.g4" >
           <Listener>true</Listener>
           <Visitor>true</Visitor>
           <GAtn>true</GAtn>

@@ -143,9 +143,37 @@ public class LarkParserVisitor : LarkParserBaseVisitor<object>
     /// <inheritdoc />
     public override object VisitExpr(LarkParser.ExprContext context)
     {
-        return new Expression
+        if (context.OP() is { } op)
         {
-            Atom = (Atom)VisitAtom(context.atom())
+            return new AtomWithOperatorExpression
+            {
+                Atom = (Atom)VisitAtom(context.atom()),
+                Operator = op.GetText()
+            };
+        }
+
+        var numbers = context.NUMBER();
+        if (numbers.Length == 0)
+        {
+            return new AtomOnlyExpression
+            {
+                Atom = (Atom)VisitAtom(context.atom()),
+            };
+        }
+        if (numbers.Length == 1)
+        {
+            return new TildeExpression
+            {
+                Atom = (Atom)VisitAtom(context.atom()),
+                From = int.Parse(numbers[0].GetText(), CultureInfo.InvariantCulture)
+            };
+        }
+
+        return new TildeRangeExpression
+        {
+            Atom = (Atom)VisitAtom(context.atom()),
+            From = int.Parse(numbers[0].GetText(), CultureInfo.InvariantCulture),
+            To = int.Parse(numbers[1].GetText(), CultureInfo.InvariantCulture)
         };
     }
 
