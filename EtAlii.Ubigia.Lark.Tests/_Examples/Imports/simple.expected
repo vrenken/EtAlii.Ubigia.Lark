@@ -1,0 +1,4 @@
+﻿start: WORD
+%import common.WORD
+%import common.WS
+%ignore WS
