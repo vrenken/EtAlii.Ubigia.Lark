@@ -7,6 +7,18 @@
 /// </summary>
 public partial class LarkParseSyntax
 {
+    /// Indicates whether the parsed syntax contains a defined starting rule.
+    /// This property evaluates to `true` if a rule with a name ending in "start" exists within the parsed items,
+    /// signifying the presence of an entry point in the syntax structure.
+    /// If no such starting rule is present, the property returns `false`.
+    /// This property is determined during the parsing process and cannot be modified afterwards.
+    public required bool HasStart { get; init; }
+
+    /// Indicates whether the parsing operation was successful and yielded a valid result.
+    /// This property returns a boolean value that reflects the integrity of the syntax representation.
+    /// A `true` value signifies that no errors were encountered during parsing, and the result is valid.
+    /// A `false` value indicates that errors were found, and the result is considered invalid.
+    /// This property is initialized during the parsing process and cannot be modified afterwards.
     public required bool IsValid { get; init; }
 
     /// Provides access to the collection of parsed items resulting from the Lark grammar processing.
