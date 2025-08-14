@@ -1,0 +1,20 @@
+﻿Country: Germany Capital: Berlin Languages: German
+Country: Canada Capital: Ottawa Languages: English, French
+Country: India Capital: New Delhi Languages: Hindi, English
+Country: Switzerland Capital: Bern Languages: German, French, Italian, Romansh
+Country: South Africa Capital: Pretoria Languages: Zulu, Xhosa, Afrikaans, English, Northern Sotho, Tswana, Southern Sotho, Tsonga, Swati, Venda, Ndebele
+Country: Brazil Capital: Brasília Languages: Portuguese
+Country: Australia Capital: Canberra Languages: English
+Country: Japan Capital: Tokyo Languages: Japanese
+Country: Egypt Capital: Cairo Languages: Arabic
+Country: Finland Capital: Helsinki Languages: Finnish, Swedish
+Country: Belgium Capital: Brussels Languages: Dutch, French, German
+Country: Singapore Capital: Singapore Languages: English, Malay, Mandarin, Tamil
+Country: Russia Capital: Moscow Languages: Russian
+Country: Argentina Capital: Buenos Aires Languages: Spanish
+Country: Morocco Capital: Rabat Languages: Arabic, Berber
+Country: Indonesia Capital: Jakarta Languages: Indonesian
+Country: Saudi Arabia Capital: Riyadh Languages: Arabic
+Country: Thailand Capital: Bangkok Languages: Thai
+Country: Mexico Capital: Mexico City Languages: Spanish
+Country: Vietnam Capital: Hanoi Languages: Vietnamese
