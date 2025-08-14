@@ -8,6 +8,7 @@ public record Token : Item
     public required int Priority { get; init; }
     public required Alias[] Expansions { get; init; }
     
+    /// <inheritdoc />
     public override string ToString()
     {
         var priority = Priority == 0 ? "" : $".{Priority}";
