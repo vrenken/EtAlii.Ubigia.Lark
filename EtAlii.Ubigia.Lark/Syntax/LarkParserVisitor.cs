@@ -12,106 +12,21 @@ namespace EtAlii.Ubigia.Lark;
 /// tree context and transforming it into the desired output.
 /// Use this class to parse the Lark language syntax tree into structured objects.
 /// </remarks>
-public class LarkParserVisitor : LarkParserBaseVisitor<object>
+public partial class LarkParserVisitor : LarkParserBaseVisitor<object>
 {
+    private readonly IImportSource _importSource;
+
+    public LarkParserVisitor(IImportSource importSource)
+    {
+        _importSource = importSource;
+    }
+
     /// <inheritdoc />
     public override object VisitStart_(LarkParser.Start_Context context)
     {
         return context
             .item()
             .Select(i => (Item)base.VisitItem(i))
-            .ToArray();
-    }
-
-    /// <inheritdoc />
-    public override object VisitRule_(LarkParser.Rule_Context context)
-    {
-        var name = context.RULE().GetText();
-        var parameters = (string[])VisitRule_params(context.rule_params());
-        var priority = int.Parse(context.priority()?.NUMBER().GetText() ?? "0", CultureInfo.InvariantCulture);
-        var expansions = (Alias[])VisitExpansions(context.expansions());
-        return new Rule
-        {
-            Name = name,
-            Parameters = parameters,
-            Priority = priority,
-            Expansions = expansions
-        };
-    }
-
-    /// <inheritdoc />
-    public override object VisitToken(LarkParser.TokenContext context)
-    {
-        var name = context.TOKEN().GetText();
-        var parameters = (string[])VisitToken_params(context.token_params());
-        var priority = int.Parse(context.priority()?.NUMBER().GetText() ?? "0", CultureInfo.InvariantCulture);
-        var expansions = (Alias[])VisitExpansions(context.expansions());
-        return new Token
-        {
-            Name = name,
-            Parameters = parameters,
-            Priority = priority,
-            Expansions = expansions
-        };
-    }
-
-    /// <inheritdoc />
-    public override object VisitStatement(LarkParser.StatementContext context)
-    {
-        if (context.expansions() is { } expansions)
-        {
-            return new IgnoreStatement
-            {
-                Expansions = (Alias[])VisitExpansions(expansions)
-            };
-        }
-
-        if (context.import_path() is { } importPath)
-        {
-            if (context.name_list() is { } nameList)
-            {
-                return new ImportStatement
-                {
-                    Path = importPath.GetText(),
-                    Names = (string[])VisitName_list(nameList)
-                };
-            }
-
-            return new ImportStatement
-            {
-                Path = importPath.GetText(),
-                Names = context.name() is { Length: > 0 } name ? [ name[0].GetText() ] : []
-            };
-        }
-
-        if (context.name() is { } names)
-        {
-            return new DeclareStatement
-            {
-                Names = names.Select(n => n.GetText()).ToArray()
-            };
-        }
-
-        return new OverrideStatement
-        {
-            Rule = (Rule)VisitRule_(context.rule_())
-        };
-    }
-
-    /// <inheritdoc />
-    public override object VisitName_list(LarkParser.Name_listContext context)
-    {
-        return context
-            .name()
-            .Select(n => n.GetText())
-            .ToArray();
-    }
-
-    /// <inheritdoc />
-    public override object VisitExpansions(LarkParser.ExpansionsContext context)
-    {
-        return context.alias()
-            .Select(a => (Alias)VisitAlias(a))
             .ToArray();
     }
 
@@ -124,19 +39,6 @@ public class LarkParserVisitor : LarkParserBaseVisitor<object>
         {
             Expansion = expansion,
             Rule = rule,
-        };
-    }
-
-    /// <inheritdoc />
-    public override object VisitExpansion(LarkParser.ExpansionContext context)
-    {
-        var expressions = context
-            .expr()
-            .Select(e => (Expression)VisitExpr(e))
-            .ToArray();
-        return new Expansion
-        {
-            Expressions = expressions
         };
     }
 
@@ -175,18 +77,6 @@ public class LarkParserVisitor : LarkParserBaseVisitor<object>
             From = int.Parse(numbers[0].GetText(), CultureInfo.InvariantCulture),
             To = int.Parse(numbers[1].GetText(), CultureInfo.InvariantCulture)
         };
-    }
-
-    /// <inheritdoc />
-    public override object VisitRule_params(LarkParser.Rule_paramsContext context)
-    {
-        return context.RULE().Select(r => r.GetText()).ToArray();
-    }
-
-    /// <inheritdoc />
-    public override object VisitToken_params(LarkParser.Token_paramsContext context)
-    {
-        return context.TOKEN().Select(r => r.GetText()).ToArray();
     }
 
     /// <inheritdoc />
