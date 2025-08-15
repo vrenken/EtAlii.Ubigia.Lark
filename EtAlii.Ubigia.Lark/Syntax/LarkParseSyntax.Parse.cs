@@ -16,7 +16,13 @@ public partial class LarkParseSyntax
         var fileSystemImportSource = new FileSystemImportSource(directory);
         var cachingImportSource = new CachingImportSource(fileSystemImportSource);
         var stream = File.OpenRead(fileName);
-        return Parse(stream, new CachingImportSource(cachingImportSource), startRule);
+        return Parse(stream, cachingImportSource, startRule);
+    }
+
+    public static LarkParseSyntax Parse(TextReader reader, string startRule = "start")
+    {
+        var importSource = new NullImportSource();
+        return Parse(reader, importSource, startRule);
     }
 
     public static LarkParseSyntax Parse(TextReader reader, IImportSource importSource, string startRule = "start")
