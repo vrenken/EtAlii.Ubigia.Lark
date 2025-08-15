@@ -7,6 +7,11 @@
 /// </summary>
 public partial class LarkParseSyntax
 {
+    /// Represents the starting rule of the parsed syntax if one is defined.
+    /// This property holds the `Rule` object corresponding to the entry point
+    /// within the parsed syntax, identified by a rule name typically ending in "start".
+    /// If the syntax does not contain a starting rule, this property is null.
+    /// The value is determined during parsing and cannot be reassigned.
     public Rule? Start { get; set; }
 
     /// Indicates whether the parsed syntax contains a defined starting rule.

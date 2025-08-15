@@ -3,13 +3,13 @@
 public record Alias
 {
     public required Expansion Expansion {get; init; }
-    public required string Rule { get; init; }
+    public required string Name { get; init; }
 
     /// <inheritdoc />
     public override string ToString()
     {
-        return string.IsNullOrWhiteSpace(Rule)
+        return string.IsNullOrWhiteSpace(Name)
             ? $"{Expansion}"
-            : $"{Expansion} -> {Rule}";
+            : $"{Expansion} -> {Name}";
     }
 }

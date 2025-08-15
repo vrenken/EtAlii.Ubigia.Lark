@@ -38,7 +38,7 @@ public partial class LarkParserVisitor : LarkParserBaseVisitor<object>
         return new Alias
         {
             Expansion = expansion,
-            Rule = rule,
+            Name = rule,
         };
     }
 
