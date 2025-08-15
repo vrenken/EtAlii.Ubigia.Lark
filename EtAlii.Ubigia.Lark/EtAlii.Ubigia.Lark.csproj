@@ -21,4 +21,8 @@
           <Error>true</Error>
       </Antlr4>
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Parse\" />
+    </ItemGroup>
 </Project>
