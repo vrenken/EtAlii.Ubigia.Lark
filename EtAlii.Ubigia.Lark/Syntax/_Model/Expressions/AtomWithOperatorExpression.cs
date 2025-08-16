@@ -8,6 +8,6 @@ public record AtomWithOperatorExpression : Expression
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{Atom} {Operator}";
+        return $"{Atom}{Operator}";
     }
 }
