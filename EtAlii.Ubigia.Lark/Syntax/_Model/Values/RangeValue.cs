@@ -6,5 +6,5 @@ public record RangeValue : Value
     public required string To { get; init; }
     
     /// <inheritdoc />
-    public override string ToString() => "\"{From}\"..\"{To}\"";
+    public override string ToString() => $"{From}..{To}";
 }
