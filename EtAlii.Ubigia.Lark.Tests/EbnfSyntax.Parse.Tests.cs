@@ -1,15 +1,18 @@
 ﻿namespace EtAlii.Ubigia.Lark.Tests;
 
-public class UnitTests
+public class EbnfSyntaxTests
 {
     [Theory]
     [ClassData(typeof(LarkTestFileNames))]
-    public void Test1(string fileName)
+    public void EbnfSyntax_Parse_File(string fileName)
     {
         // Arrange.
+        var commonDirectory = "_Examples/Common";
+        var directory = Path.GetDirectoryName(fileName)!;
+        var importSource = new FileSystemImportSource(directory, commonDirectory);
         
         // Act.
-        var syntax = LarkParseSyntax.Parse(fileName);
+        var syntax = EbnfSyntax.Parse(fileName, importSource);
 
         // Assert.
         Assert.True(syntax.IsValid);
@@ -26,13 +29,13 @@ public class UnitTests
     }
     
     [Fact]
-    public void Test2()
+    public void EbnfSyntax_Parse_File_Common()
     {
         // Arrange.
         var fileName = @"_Examples/Antlr4/common.lark";
         
         // Act.
-        var syntax = LarkParseSyntax.Parse(fileName);
+        var syntax = EbnfSyntax.Parse(fileName);
 
         // Assert.
         Assert.NotEmpty(syntax.Items);
