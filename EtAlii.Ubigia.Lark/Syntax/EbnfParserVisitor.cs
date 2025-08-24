@@ -8,15 +8,15 @@ namespace EtAlii.Ubigia.Lark;
 /// </summary>
 /// <remarks>
 /// This class overrides methods from the base class <c>LarkParserBaseVisitor</c> to handle specific
-/// rules in the Lark grammar. Each method is responsible for processing the respective parse
+/// rules in the EBNF/Lark syntax. Each method is responsible for processing the respective parse
 /// tree context and transforming it into the desired output.
-/// Use this class to parse the Lark language syntax tree into structured objects.
+/// Use this class to parse the EBNF/Lark language syntax tree into structured objects.
 /// </remarks>
-public partial class LarkParserVisitor : LarkParserBaseVisitor<object>
+public partial class EbnfParserVisitor : LarkParserBaseVisitor<object>
 {
     private readonly IImportSource _importSource;
 
-    public LarkParserVisitor(IImportSource importSource)
+    public EbnfParserVisitor(IImportSource importSource)
     {
         _importSource = importSource;
     }
@@ -93,8 +93,8 @@ public partial class LarkParserVisitor : LarkParserBaseVisitor<object>
         {
             return new RangeValue
             {
-                From = strings[0].GetText(),
-                To = strings[1].GetText()
+                From = strings[0].Symbol.Text,
+                To = strings[1].Symbol.Text
             };
         }
 
@@ -107,7 +107,7 @@ public partial class LarkParserVisitor : LarkParserBaseVisitor<object>
         if (values.Length > 0)
         {
             var name = context.name().GetText();
-            return new CollectionValue
+            return new NamedValueList
             {
                 Name = name,
                 Values = values

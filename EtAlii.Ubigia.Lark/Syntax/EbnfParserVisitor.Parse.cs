@@ -3,49 +3,55 @@ using Antlr4.Runtime;
 
 namespace EtAlii.Ubigia.Lark;
 
-public partial class LarkParseSyntax
+public partial class EbnfSyntax
 {
     /// <summary>
-    /// Parses the content provided in the specified file and generates a <see cref="LarkParseSyntax"/> object.
+    /// Parses the content provided in the specified file and generates a <see cref="EbnfSyntax"/> object.
     /// This method uses a default implementation of an import source for resolving references during parsing.
     /// </summary>
-    /// <returns>A <see cref="LarkParseSyntax"/> object representing the parsed results, including items, errors, and the parsed text.</returns>
-    public static LarkParseSyntax Parse(string fileName, string startRule = "start")
+    /// <returns>A <see cref="EbnfSyntax"/> object representing the parsed results, including items, errors, and the parsed text.</returns>
+    public static EbnfSyntax Parse(string fileName, string startRule = "start")
     {
         var directory = Path.GetDirectoryName(fileName)!;
-        var fileSystemImportSource = new FileSystemImportSource(directory);
+        var fileSystemImportSource = new FileSystemImportSource(directory, directory);
         var cachingImportSource = new CachingImportSource(fileSystemImportSource);
         var stream = File.OpenRead(fileName);
         return Parse(stream, cachingImportSource, startRule);
     }
 
-    public static LarkParseSyntax Parse(TextReader reader, string startRule = "start")
+    public static EbnfSyntax Parse(string fileName, IImportSource importSource, string startRule = "start")
+    {
+        var stream = File.OpenRead(fileName);
+        return Parse(stream, importSource, startRule);
+    }
+    
+    public static EbnfSyntax Parse(TextReader reader, string startRule = "start")
     {
         var importSource = new NullImportSource();
         return Parse(reader, importSource, startRule);
     }
 
-    public static LarkParseSyntax Parse(TextReader reader, IImportSource importSource, string startRule = "start")
+    public static EbnfSyntax Parse(TextReader reader, IImportSource importSource, string startRule = "start")
     {
         var inputStream = new AntlrInputStream(reader);
         return Parse(inputStream, importSource, startRule);
     }
 
-    public static LarkParseSyntax Parse(Stream stream, IImportSource importSource, string startRule = "start")
+    public static EbnfSyntax Parse(Stream stream, IImportSource importSource, string startRule = "start")
     {
         var inputStream = new AntlrInputStream(stream);
         return Parse(inputStream, importSource, startRule);
     }
 
     /// <summary>
-    /// Parses the content from the specified input stream into a <see cref="LarkParseSyntax"/> object.
+    /// Parses the content from the specified input stream into a <see cref="EbnfSyntax"/> object.
     /// The method enables providing a custom import source to resolve references during parsing and specifies a rule name to start parsing.
     /// </summary>
     /// <param name="inputStream">The input stream containing the content to be parsed.</param>
     /// <param name="importSource">An instance of <see cref="IImportSource"/> used to handle import references during parsing.</param>
     /// <param name="startRule">The name of the rule to use as the starting point for parsing. Defaults to "start".</param>
-    /// <returns>A <see cref="LarkParseSyntax"/> object containing parsed content, rules, tokens, errors, and other detailed results of the operation.</returns>
-    public static LarkParseSyntax Parse(
+    /// <returns>A <see cref="EbnfSyntax"/> object containing parsed content, rules, tokens, errors, and other detailed results of the operation.</returns>
+    public static EbnfSyntax Parse(
         AntlrInputStream inputStream, 
         IImportSource importSource,
         string startRule = "start")
@@ -58,7 +64,7 @@ public partial class LarkParseSyntax
         };
         var tree = parser.start_();
         //parser.CompileParseTreePattern()
-        var visitor = new LarkParserVisitor(importSource);
+        var visitor = new EbnfParserVisitor(importSource);
         var items = (Item[])visitor.VisitStart_(tree);
 
         var errorListener = new LarkParserErrorListener();
@@ -88,7 +94,7 @@ public partial class LarkParseSyntax
 
         var start = rules.SingleOrDefault(r => r.Name.EndsWith(startRule));
         
-        return new LarkParseSyntax
+        return new EbnfSyntax
         {
             HasStart = start != null,
             Start = start,

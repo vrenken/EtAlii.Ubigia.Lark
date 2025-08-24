@@ -1,6 +1,6 @@
 ﻿namespace EtAlii.Ubigia.Lark;
 
-public partial class LarkParserVisitor
+public partial class EbnfParserVisitor
 {
     /// <inheritdoc />
     public override object VisitExpansions(LarkParser.ExpansionsContext context)

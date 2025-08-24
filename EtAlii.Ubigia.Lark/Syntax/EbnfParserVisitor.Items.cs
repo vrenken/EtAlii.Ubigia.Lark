@@ -2,7 +2,7 @@
 
 namespace EtAlii.Ubigia.Lark;
 
-public partial class LarkParserVisitor
+public partial class EbnfParserVisitor
 {
     /// <inheritdoc />
     public override object VisitRule_(LarkParser.Rule_Context context)
