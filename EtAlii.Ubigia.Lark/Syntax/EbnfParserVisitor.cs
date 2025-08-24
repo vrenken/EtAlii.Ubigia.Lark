@@ -109,7 +109,7 @@ public partial class EbnfParserVisitor : LarkParserBaseVisitor<object>
             var name = context.name().GetText();
             return new NamedValueList
             {
-                Name = name,
+                Name = name ?? "(collection)",
                 Values = values
                     .Select(v => (Value)VisitValue(v))
                     .ToArray()
