@@ -14,5 +14,5 @@ public interface IImportSource
     /// </summary>
     /// <param name="fileName">The name of the file to be imported.</param>
     /// <returns>The content of the file as a string.</returns>
-    public string Import(string fileName);
+    public EbnfSyntax Import(string fileName);
 }

@@ -10,21 +10,30 @@
 /// </remarks>
 public class CachingImportSource : IImportSource
 {
-    private readonly Dictionary<string, string> _cache = new();
+    private readonly Dictionary<string, EbnfSyntax> _cache = new();
     private readonly IImportSource _inner
         ;
 
+    /// <summary>
+    /// Provides caching functionality to optimize the import process by reducing redundant fetch operations.
+    /// </summary>
+    /// <remarks>
+    /// This class acts as a decorator for the <see cref="IImportSource"/> interface, introducing a caching mechanism to
+    /// store previously fetched syntax definitions. On an import request, the cache is checked for existing data before
+    /// delegating to the underlying import source.
+    /// </remarks>
     public CachingImportSource(IImportSource inner)
     {
         _inner = inner;
     }
 
-    public string Import(string fileName)
+    /// <inheritdoc />
+    public EbnfSyntax Import(string fileName)
     {
-        if (!_cache.TryGetValue(fileName, out var content))
+        if (!_cache.TryGetValue(fileName, out var syntax))
         {
-            content = _cache[fileName] = _inner.Import(fileName);
+            syntax = _cache[fileName] = _inner.Import(fileName);
         }
-        return content;
+        return syntax;
     }
 }
