@@ -1,6 +1,6 @@
 ﻿namespace EtAlii.Ubigia.Lark;
 
-public record CollectionValue : Value
+public record NamedValueList : Value
 {
     public required string Name { get; init; }
 
@@ -9,6 +9,6 @@ public record CollectionValue : Value
     /// <inheritdoc />
     public override string ToString()
     {
-        return $"{Name} {{ {string.Join(",", Values.Select(v => v.ToString()))} }}";
+        return $"{Name}{{{string.Join(", ", Values.Select(v => v.ToString()))}}}";
     }
 }
