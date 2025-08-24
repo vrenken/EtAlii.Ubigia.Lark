@@ -13,7 +13,7 @@ public record Rule : Item
     {
         var priority = Priority == 0 ? "" : $".{Priority}";
         return Parameters.Any()
-            ? $"{Name}{{{string.Join(',', Parameters)}}}{priority}: {string.Join($"{Environment.NewLine}\t| ", Expansions.Select(e => e.ToString()))}"
+            ? $"{Name}{{{string.Join(", ", Parameters)}}}{priority}: {string.Join($"{Environment.NewLine}\t| ", Expansions.Select(e => e.ToString()))}"
             : $"{Name}{priority}: {string.Join($"{Environment.NewLine}\t| ", Expansions.Select(e => e.ToString()))}";
     }
 }
