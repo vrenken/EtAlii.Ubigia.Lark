@@ -15,7 +15,7 @@ public record ImportStatement : Statement
     /// This property holds the parsed syntax tree for an import statement in the Lark syntax.
     /// It is loaded by parsing the content of the imported file and interpreting its structure.
     /// </remarks>
-    public LarkParseSyntax Syntax { get; private set; } = null!;
+    public EbnfSyntax Syntax { get; private set; } = null!;
 
     /// <summary>
     /// Gets the path associated with the import statement.
@@ -40,10 +40,6 @@ public record ImportStatement : Statement
 
     internal void Load(IImportSource importSource)
     {
-        var filename = Path.Split('.')[0];
-        filename = $"{filename}.lark";
-        var content = importSource.Import(filename);
-        using var s = new StringReader(content);
-        Syntax = LarkParseSyntax.Parse(s, importSource);
+        Syntax = importSource.Import(Path);
     }
 }

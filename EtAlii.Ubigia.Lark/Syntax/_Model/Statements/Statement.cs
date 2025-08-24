@@ -1,7 +1,7 @@
 ﻿namespace EtAlii.Ubigia.Lark;
 
 /// <summary>
-/// Represents the base class for various types of statements in the Lark grammar system.
+/// Represents the base class for various types of statements in the EBNF/Lark syntax system.
 /// </summary>
 /// <remarks>
 /// A Statement serves as an abstract representation for different syntactical statements,
