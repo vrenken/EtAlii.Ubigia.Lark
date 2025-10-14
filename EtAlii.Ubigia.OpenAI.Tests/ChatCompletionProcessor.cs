@@ -77,26 +77,45 @@ public partial class ChatCompletionProcessor
                                         }
 
                                     case nameof(GetCurrentWeather):
+                                    {
+                                        // The arguments that the model wants to use to call the function are specified as a
+                                        // stringified JSON object based on the schema defined in the tool definition. Note that
+                                        // the model may hallucinate arguments too. Consequently, it is important to do the
+                                        // appropriate parsing and validation before calling the function.
+                                        using var argumentsJson = JsonDocument.Parse(toolCall.FunctionArguments);
+                                        var hasLocation = argumentsJson.RootElement.TryGetProperty("location", out var location);
+                                        var hasUnit = argumentsJson.RootElement.TryGetProperty("unit", out var unit);
+
+                                        if (!hasLocation)
                                         {
-                                            // The arguments that the model wants to use to call the function are specified as a
-                                            // stringified JSON object based on the schema defined in the tool definition. Note that
-                                            // the model may hallucinate arguments too. Consequently, it is important to do the
-                                            // appropriate parsing and validation before calling the function.
-                                            using var argumentsJson = JsonDocument.Parse(toolCall.FunctionArguments);
-                                            var hasLocation = argumentsJson.RootElement.TryGetProperty("location", out var location);
-                                            var hasUnit = argumentsJson.RootElement.TryGetProperty("unit", out var unit);
-
-                                            if (!hasLocation)
-                                            {
-                                                throw new ArgumentNullException(nameof(location), "The location argument is required.");
-                                            }
-
-                                            var toolResult = hasUnit
-                                                ? GetCurrentWeather(location.GetString()!, unit.GetString()!)
-                                                : GetCurrentWeather(location.GetString()!);
-                                            history.Add(new ToolChatMessage(toolCall.Id, toolResult));
-                                            break;
+                                            throw new ArgumentNullException(nameof(location), "The location argument is required.");
                                         }
+
+                                        var toolResult = hasUnit
+                                            ? GetCurrentWeather(location.GetString()!, unit.GetString()!)
+                                            : GetCurrentWeather(location.GetString()!);
+                                        history.Add(new ToolChatMessage(toolCall.Id, toolResult));
+                                        break;
+                                    }
+
+                                    case nameof(GetSidcRefinementOptions):
+                                    {
+                                        using var argumentsJson = JsonDocument.Parse(toolCall.FunctionArguments);
+                                        var hasSidc = argumentsJson.RootElement.TryGetProperty("sidc", out var sidc);
+                                        var hasHint = argumentsJson.RootElement.TryGetProperty("hint", out var hint);
+
+                                        if (!hasSidc)
+                                        {
+                                            throw new ArgumentNullException(nameof(sidc), "The sidc argument is required.");
+                                        }
+
+                                        var toolResult = hasHint
+                                            ? GetSidcRefinementOptions(sidc.GetString()!, hint.GetString()!)
+                                            : GetSidcRefinementOptions(sidc.GetString()!);
+                                        var response = JsonSerializer.Serialize(toolResult);
+                                        history.Add(new ToolChatMessage(toolCall.Id, response));
+                                        break;
+                                    }
 
                                     default:
                                         {

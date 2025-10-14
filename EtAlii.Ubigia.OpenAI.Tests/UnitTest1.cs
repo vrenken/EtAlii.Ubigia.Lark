@@ -55,4 +55,30 @@ public class UnitTest1
         // Act.
         await processor.Process(client, messages, options);
     }
+
+    [Fact]
+    public async Task Sidc_Generation_Tank_01()
+    {
+        // Arrange.
+        var client = CreateClient();
+        var messages = new ChatMessage[] { new UserChatMessage("Please provide me with a SIDC for a friendly tank. Do not provide an explanation but only return the SIDC code.") };
+        var options = new ChatCompletionOptions { Tools = { ChatCompletionProcessor.GetSidcRefinementOptionsTool } };
+        var processor = new ChatCompletionProcessor(_testOutputHelper);
+
+        // Act.
+        await processor.Process(client, messages, options);
+    }
+
+    [Fact]
+    public async Task Sidc_Generation_Aircraft_01()
+    {
+        // Arrange.
+        var client = CreateClient();
+        var messages = new ChatMessage[] { new UserChatMessage("Please provide me with a SIDC for a hostile aircraft. Do not provide an explanation but only return the SIDC code.") };
+        var options = new ChatCompletionOptions { Tools = { ChatCompletionProcessor.GetSidcRefinementOptionsTool } };
+        var processor = new ChatCompletionProcessor(_testOutputHelper);
+
+        // Act.
+        await processor.Process(client, messages, options);
+    }
 }
