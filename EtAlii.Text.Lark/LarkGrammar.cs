@@ -35,9 +35,7 @@ public class LarkGrammar : Grammar
     private readonly string _startParserName = "start";
     private Grammar _startGrammar;
     private Parser _separator;
-
-    public LarkStyle Style { get; private set; }
-
+    
     public bool DefineCommonNonTerminals { get; set; }
 
     public IDictionary<string, Parser> SpecialParsers => _specialLookup;
@@ -45,28 +43,28 @@ public class LarkGrammar : Grammar
 
     private void GenerateSeparator()
     {
-        _separator = null;
-        if (Style.HasFlag(LarkStyle.UseWhitespaceRule) && _parserLookup.TryGetValue("whitespace", out var whitespaceRule))
-        {
-            _separator = whitespaceRule;
-        }
-        else
-        {
-            if (Style.HasFlag(LarkStyle.WhitespaceSeparator))
-            {
+        // _separator = null;
+        // if (Style.HasFlag(LarkStyle.UseWhitespaceRule) && _parserLookup.TryGetValue("whitespace", out var whitespaceRule))
+        // {
+        //     _separator = whitespaceRule;
+        // }
+        // else
+        // {
+            // if (Style.HasFlag(LarkStyle.WhitespaceSeparator))
+            // {
                 _separator = Terminals.WhiteSpace;
-            }
+            // }
 
-            if (Style.HasFlag(LarkStyle.UseCommentRuleWithSeparator) && _parserLookup.TryGetValue("comment", out var comment))
-            {
-                _separator = _separator != null ? _separator | comment : comment;
-            }
+            // if (Style.HasFlag(LarkStyle.UseCommentRuleWithSeparator) && _parserLookup.TryGetValue("comment", out var comment))
+            // {
+            //     _separator = _separator != null ? _separator | comment : comment;
+            // }
 
-            if (_separator != null)
-            {
-                _separator = -_separator;
-            }
-        }
+            // if (_separator != null)
+            // {
+            //     _separator = -_separator;
+            // }
+        // }
     }
 
     
@@ -92,10 +90,10 @@ public class LarkGrammar : Grammar
         }
     }
 
-    public LarkGrammar(LarkStyle style)
-        : base("ebnf")
+    public LarkGrammar()//(LarkStyle style)
+        : base("lark")
     {
-        Style = style;
+        // Style = style;
         DefineCommonNonTerminals = true;
         GenerateSpecialSequences();
 
@@ -110,7 +108,7 @@ public class LarkGrammar : Grammar
         var terminalString = new StringParser { QuoteCharacters = ['\"', '\'', '’'], Name = "terminal string" };
         var specialSequence = ("?" & (+Terminals.AnyChar).Until("?").WithName("name") & "?").WithName("special sequence");
         var metaIdentifierTerminal = new OptionalParser("?", "inline") & (Terminals.Letter | '_') & -(Terminals.LetterOrDigit | '_');
-        var integer = new NumberParser().WithName("integer");
+        //var integer = new NumberParser().WithName("integer");
 
         // nonterminals
         var definitionList = new RepeatParser(0).WithName("definition list");
@@ -126,15 +124,15 @@ public class LarkGrammar : Grammar
 
         Parser groupedSequence = ("(" & ows & definitionList & ows & ")").WithName("grouped sequence");
 
-        if (style.HasFlag(LarkStyle.EscapeTerminalStrings))
-        {
+        //if (style.HasFlag(LarkStyle.EscapeTerminalStrings))
+        //{
             terminalString.AllowEscapeCharacters = true;
-        }
+        //}
 
-        if (style.HasFlag(LarkStyle.SquareBracketAsOptional))
-        {
-            primary.Add(("[" & ows & definitionList & ows & "]").WithName("optional sequence"));
-        }
+        // if (style.HasFlag(LarkStyle.SquareBracketAsOptional))
+        // {
+        //     primary.Add(("[" & ows & definitionList & ows & "]").WithName("optional sequence"));
+        // }
 
         // if (!style.HasFlag(LarkStyle.CardinalityFlags))
         // {
@@ -153,16 +151,16 @@ public class LarkGrammar : Grammar
             metaReference = metaReference.NotFollowedBy(ows & ruleEquals);
         // }
         primary.Add(groupedSequence, metaReference, terminalString, specialSequence);
-        if (style.HasFlag(LarkStyle.CharacterSets) && !style.HasFlag(LarkStyle.SquareBracketAsOptional))
-        {
+        //if (style.HasFlag(LarkStyle.CharacterSets) && !style.HasFlag(LarkStyle.SquareBracketAsOptional))
+        //{
             // w3c supports character sets
             primary.Add(hexCharacter.Named("hex character"));
             primary.Add(characterSet);
-        }
-        if (style.HasFlag(LarkStyle.NumericCardinality))
-        {
-            factor.Add(~(integer & ows & "*" & ows));
-        }
+        //}
+        // if (style.HasFlag(LarkStyle.NumericCardinality))
+        // {
+        //     factor.Add(~(integer & ows & "*" & ows));
+        // }
 
         factor.Add(primary);
         

@@ -14,7 +14,7 @@ public class LarkEbnfParserTests
         //var importSource = new FileSystemImportSource(directory, commonDirectory);
         
         // Act.
-        var ebnfGrammar = new LarkGrammar(LarkStyle.Default);// | EbnfStyle.UseCommentRuleWithSeparator | EbnfStyle.SquareBracketAsOptional | EbnfStyle.WhitespaceSeparator);
+        var ebnfGrammar = new LarkGrammar();// | EbnfStyle.UseCommentRuleWithSeparator | EbnfStyle.SquareBracketAsOptional | EbnfStyle.WhitespaceSeparator);
         var grammar = ebnfGrammar.Build(ebnf);
         var actual = grammar?.ToString() ?? string.Empty;
         
