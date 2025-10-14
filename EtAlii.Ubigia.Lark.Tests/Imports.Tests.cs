@@ -9,7 +9,7 @@ public class ImportsTests
         var fileName = @"_Examples/Imports/simple.lark";
         
         // Act.
-        var syntax = LarkParseSyntax.Parse(fileName);
+        var syntax = EbnfSyntax.Parse(fileName);
 
         // Assert.
         Assert.True(syntax.IsValid);
