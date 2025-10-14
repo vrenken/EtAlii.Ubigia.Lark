@@ -1,0 +1,8 @@
+﻿<Solution>
+  <Project Path="EtAlii.Text.Lark.Generators\EtAlii.Text.Lark.Generators.Sample\EtAlii.Text.Lark.Generators.Sample.csproj" Type="Classic C#" />
+  <Project Path="EtAlii.Text.Lark.Generators\EtAlii.Text.Lark.Generators.Tests\EtAlii.Text.Lark.Generators.Tests.csproj" Type="Classic C#" />
+  <Project Path="EtAlii.Text.Lark.Generators\EtAlii.Text.Lark.Generators\EtAlii.Text.Lark.Generators.csproj" Type="Classic C#" />
+  <Project Path="EtAlii.Text.Lark\EtAlii.Text.Lark.csproj" Type="Classic C#" />
+  <Project Path="EtAlii.Ubigia.Lark.Tests\EtAlii.Ubigia.Lark.Tests.csproj" Type="Classic C#" />
+  <Project Path="EtAlii.Ubigia.Lark\EtAlii.Ubigia.Lark.csproj" Type="Classic C#" />
+</Solution>
