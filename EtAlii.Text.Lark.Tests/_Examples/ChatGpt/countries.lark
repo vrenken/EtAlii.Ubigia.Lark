@@ -1,12 +1,12 @@
-﻿
+﻿// countries.lark
 
-start: country_entry +
+start: country_entry+
 
 country_entry: "Country:" NAME "Capital:" NAME "Languages:" language_list
 
-language_list: NAME ("," NAME)* *
+language_list: NAME ("," NAME)*
 
 NAME: /[A-Z][a-z]+(?:\s[A-Z][a-z]+)*/
 
-%import common.WS
+WS: /[ \t\f\r\n]/+
 %ignore WS
