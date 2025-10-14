@@ -25,6 +25,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\EtAlii.Text.Lark.Tests\EtAlii.Text.Lark.Tests.csproj" />
       <ProjectReference Include="..\EtAlii.Ubigia.Lark\EtAlii.Ubigia.Lark.csproj" />
     </ItemGroup>
 
