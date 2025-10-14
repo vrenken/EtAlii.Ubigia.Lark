@@ -21,12 +21,12 @@ public enum LarkStyle
     /// ISO format as defined here: http://en.wikipedia.org/wiki/Extended_Backus-Naur_Form
     /// </summary>
     //Iso14977 = SquareBracketAsOptional | BracketComments | NumericCardinality | SemicolonTerminator | CommaSeparator | WhitespaceSeparator,
-    Iso14977 = SquareBracketAsOptional | NumericCardinality | SemicolonTerminator | CommaSeparator | WhitespaceSeparator,
+    Default = WhitespaceSeparator | CharacterSets,// | CardinalityFlags,
 
-    /// <summary>
-    /// W3C format as defined for the XML spec here: http://www.w3.org/TR/REC-xml/#sec-notation
-    /// </summary>
-    W3c = CharacterSets | CardinalityFlags | DoubleColonEquals,
+    // /// <summary>
+    // /// W3C format as defined for the XML spec here: http://www.w3.org/TR/REC-xml/#sec-notation
+    // /// </summary>
+    // W3c = CharacterSets | CardinalityFlags | DoubleColonEquals,
 
     // /// <summary>
     // /// Enables comments using round brackets (* *), otherwise comments use C style /* */
@@ -48,30 +48,30 @@ public enum LarkStyle
     /// </summary>
     NumericCardinality = 1 << 3,
 
-    /// <summary>
-    /// Enables cardinality flags *+? after the rule, E.g. myFirstTerm* mySecondTerm+ myThirdTerm?.
-    /// </summary>
-    /// <remarks>
-    /// * = zero or more
-    /// + = one or more
-    /// ? = zero or one, only enabled when <see cref="SquareBracketAsOptional"/> is not specified.
-    /// </remarks>
-    CardinalityFlags = 1 << 4,
+    // /// <summary>
+    // /// Enables cardinality flags *+? after the rule, E.g. myFirstTerm* mySecondTerm+ myThirdTerm?.
+    // /// </summary>
+    // /// <remarks>
+    // /// * = zero or more
+    // /// + = one or more
+    // /// ? = zero or one, only enabled when <see cref="SquareBracketAsOptional"/> is not specified.
+    // /// </remarks>
+    // CardinalityFlags = 1 << 4,
 
-    /// <summary>
-    /// Require a semicolon to terminate each rule, otherwise only whitespace is required. E.g. myTerm = Term1 , Term2;
-    /// </summary>
-    SemicolonTerminator = 1 << 5,
+    // /// <summary>
+    // /// Require a semicolon to terminate each rule, otherwise only whitespace is required. E.g. myTerm = Term1 , Term2;
+    // /// </summary>
+    // SemicolonTerminator = 1 << 5,
 
-    /// <summary>
-    /// Separate each term by a comma. If not specified, a term may be more than one word.
-    /// </summary>
-    CommaSeparator = 1 << 6,
+    // /// <summary>
+    // /// Separate each term by a comma. If not specified, a term may be more than one word.
+    // /// </summary>
+    // CommaSeparator = 1 << 6,
 
-    /// <summary>
-    /// Use a double colon for the rule equals. If not specified, no colon is required.  E.g. myTerm ::= Term1  vs. myTerm = Term1
-    /// </summary>
-    DoubleColonEquals = 1 << 7,
+    // /// <summary>
+    // /// Use a double colon for the rule equals. If not specified, no colon is required.  E.g. myTerm ::= Term1  vs. myTerm = Term1
+    // /// </summary>
+    // DoubleColonEquals = 1 << 7,
 
     /// <summary>
     /// Use Terminals.WhiteSpace as a default separator between each non-terminal. Ignored when <see cref="UseWhitespaceRule"/> is specified and grammar defines the whitespace terminal.
@@ -142,7 +142,7 @@ public class LarkGrammar : Grammar
 
             if (Style.HasFlag(LarkStyle.UseCommentRuleWithSeparator) && _parserLookup.TryGetValue("comment", out var comment))
             {
-                _separator = _separator != null ? (_separator | comment) : comment;
+                _separator = _separator != null ? _separator | comment : comment;
             }
 
             if (_separator != null)
@@ -160,7 +160,7 @@ public class LarkGrammar : Grammar
             if (typeof (Parser).GetTypeInfo().IsAssignableFrom(declaredProperty.PropertyType.GetTypeInfo()))
             {
                 var parser = declaredProperty.GetValue(null, null) as Parser;
-                yield return new Tuple<string, Parser>(declaredProperty.Name, parser.WithName<Parser>(declaredProperty.Name));
+                yield return new Tuple<string, Parser>(declaredProperty.Name, parser.WithName(declaredProperty.Name));
             }
         }
     }
@@ -186,13 +186,13 @@ public class LarkGrammar : Grammar
         var comment = new GroupParser("//", new AlternativeParser("\r", "\n", "\r\n"));
         var ows = -(Terminals.WhiteSpace | comment);
         var rws = +(Terminals.WhiteSpace | comment);
-        var hexCharacter = ("#x" & +Terminals.HexDigit);
+        var hexCharacter = "#x" & +Terminals.HexDigit;
         var character = (("\\" & Terminals.AnyChar) | hexCharacter | Terminals.AnyChar.Except("]")).WithName("character");
         var characterRange = (character & "-" & character).WithName("character range");
         var characterSet = ("[" & ~(Parser)"^" & +(characterRange | character) & "]").WithName("character set");
-        var terminalString = new StringParser { QuoteCharacters = new[] { '\"', '\'', '’' }, Name = "terminal string" };
+        var terminalString = new StringParser { QuoteCharacters = ['\"', '\'', '’'], Name = "terminal string" };
         var specialSequence = ("?" & (+Terminals.AnyChar).Until("?").WithName("name") & "?").WithName("special sequence");
-        var metaIdentifierTerminal = Terminals.Letter & -(Terminals.LetterOrDigit | '_');
+        var metaIdentifierTerminal = new OptionalParser("?", "inline") & (Terminals.Letter | '_') & -(Terminals.LetterOrDigit | '_');
         var integer = new NumberParser().WithName("integer");
 
         // nonterminals
@@ -219,21 +219,22 @@ public class LarkGrammar : Grammar
             primary.Add(("[" & ows & definitionList & ows & "]").WithName("optional sequence"));
         }
 
-        if (!style.HasFlag(LarkStyle.CardinalityFlags))
-        {
-            var repeatedSequence = ("{" & ows & definitionList & ows & "}").WithName("repeated sequence");
-            primary.Add(repeatedSequence);
-        }
+        // if (!style.HasFlag(LarkStyle.CardinalityFlags))
+        // {
+        //     //var repeatedSequence = ("{" & ows & definitionList & ows & "}").WithName("repeated sequence");
+        //     var repeatedSequence = (ows & definitionList & ows).WithName("repeated sequence");
+        //     primary.Add(repeatedSequence);
+        // }
 
         // rules
         metaIdentifier.Inner = metaIdentifierTerminal;
-        metaIdentifier.Separator = +(Terminals.SingleLineWhiteSpace);
-        if (!style.HasFlag(LarkStyle.CommaSeparator))
-        {
+        metaIdentifier.Separator = +Terminals.SingleLineWhiteSpace;
+        // if (!style.HasFlag(LarkStyle.CommaSeparator))
+        // {
             // w3c identifiers must be a single word
             metaIdentifier.Maximum = 1;
             metaReference = metaReference.NotFollowedBy(ows & ruleEquals);
-        }
+        // }
         primary.Add(groupedSequence, metaReference, terminalString, specialSequence);
         if (style.HasFlag(LarkStyle.CharacterSets) && !style.HasFlag(LarkStyle.SquareBracketAsOptional))
         {
@@ -247,27 +248,25 @@ public class LarkGrammar : Grammar
         }
 
         factor.Add(primary);
-        if (style.HasFlag(LarkStyle.CardinalityFlags))
-        {
-            // w3c defines cardinality at the end of a factor
-            var flags = style.HasFlag(LarkStyle.SquareBracketAsOptional) ? "*+" : "?*+";
-            factor.Add(~(ows & Terminals.Set(flags).WithName("cardinality")));
-        }
+        
+        // Enables cardinality flags *+? after the rule, E.g. myFirstTerm* mySecondTerm+ myThirdTerm?.
+        factor.Add(~(ows & Terminals.Set("?*+").WithName("cardinality")));
+
         term.Add(factor, ~(ows & "-" & ows & exception));
         exception.Inner = term;
         singleDefinition.Inner = term;
-        singleDefinition.Separator = style.HasFlag(LarkStyle.CommaSeparator) ? (Parser)(ows & "," & ows) : ows;
+        singleDefinition.Separator = ows; //singleDefinition.Separator = style.HasFlag(LarkStyle.CommaSeparator) ? ows & "," & ows : ows;
         definitionList.Inner = singleDefinition;
         definitionList.Separator = ows & "|" & ows;
-        ruleEquals.Add(style.HasFlag(LarkStyle.DoubleColonEquals) ? "::=" : "=", ":=");
+        ruleEquals.Add(":"); //ruleEquals.Add(style.HasFlag(LarkStyle.DoubleColonEquals) ? "::=" : "=", ":=");
         syntaxRule.Add(metaIdentifier, ows, ruleEquals, ows, definitionList);
-        if (style.HasFlag(LarkStyle.SemicolonTerminator))
-        {
-            syntaxRule.Add(ows, ";"); // iso rules are terminated by a semicolon
-        }
+        // if (style.HasFlag(LarkStyle.SemicolonTerminator))
+        // {
+        //     syntaxRule.Add(ows, ";"); // iso rules are terminated by a semicolon
+        // }
 
         var syntaxRules = +syntaxRule;
-        syntaxRules.Separator = style.HasFlag(LarkStyle.SemicolonTerminator) ? ows : rws;
+        syntaxRules.Separator = rws; //syntaxRules.Separator = style.HasFlag(LarkStyle.SemicolonTerminator) ? ows : rws;
 
         Inner = ows & syntaxRules & ows;
 
@@ -286,7 +285,8 @@ public class LarkGrammar : Grammar
         syntaxRule.Matched += m =>
         {
             var name = m["meta identifier"].Text;
-            var isTerminal = m["equals"].Text == ":=";
+            // var isTerminal = m["equals"].Text == ":=";
+            var isTerminal = m["equals"].Text == ":";
             var parser = m.Tag as UnaryParser;
             var inner = DefinitionList(m["definition list"], isTerminal);
             if (_separator != null && name == _startParserName)
@@ -301,7 +301,7 @@ public class LarkGrammar : Grammar
         syntaxRule.PreMatch += m =>
         {
             var name = m["meta identifier"].Text;
-            var parser = (name == _startParserName) ? (_startGrammar ?? new Grammar(name)) : new UnaryParser(name);
+            var parser = name == _startParserName ? _startGrammar ?? new Grammar(name) : new UnaryParser(name);
             m.Tag = _parserLookup[name] = parser;
         };
     }
@@ -309,17 +309,12 @@ public class LarkGrammar : Grammar
     private Parser DefinitionList(Match match, bool isTerminal)
     {
         var definitions = match.Find("single definition").ToList();
-        if (definitions.Count == 1)
+        return definitions.Count switch
         {
-            return SingleDefinition(definitions[0], isTerminal);
-        }
-
-        if (definitions.Count == 0)
-        {
-            return null;
-        }
-
-        return new AlternativeParser(definitions.Select(r => SingleDefinition(r, isTerminal)));
+            1 => SingleDefinition(definitions[0], isTerminal),
+            0 => null,
+            _ => new AlternativeParser(definitions.Select(r => SingleDefinition(r, isTerminal)))
+        };
     }
 
     private Parser SingleDefinition(Match match, bool isTerminal)
@@ -463,9 +458,8 @@ public class LarkGrammar : Grammar
         var alt = new AlternativeParser();
         var inverse = match.Text.StartsWith("[^", StringComparison.Ordinal);
         var characters = new List<char>();
-        for (var i = 0; i < match.Matches.Count; i++)
+        foreach (var child in match.Matches)
         {
-            var child = match.Matches[i];
             if (child.Name == null)
             {
                 continue;
