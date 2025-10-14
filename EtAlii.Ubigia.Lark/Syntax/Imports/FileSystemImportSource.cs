@@ -29,19 +29,37 @@ public class FileSystemImportSource : IImportSource
         if (fileName.StartsWith('.'))
         {
             fileName = fileName.TrimStart('.');
-            fileName = fileName.Split('.')[0];
+            var pieces = fileName.Split('.');
+            var id = pieces.Length > 1 ? pieces[^1] : null;
+            pieces = pieces.Take(pieces.Length > 1 ? pieces.Length - 1 : 1).ToArray();
+            fileName = string.Join(Path.DirectorySeparatorChar, pieces);
             fileName = $"{fileName}.lark";
             fullPath = Path.Combine(_currentDirectory, fileName);
+
+            // if (!File.Exists(fullPath))
+            // {
+            //     fullPath = Path.Combine(_commonDirectory, fileName); 
+            // }
         }
         else
         {
-            fileName = fileName.Split('.')[0];
+            var pieces = fileName.Split('.');
+            var id = pieces.Length > 1 ? pieces[^1] : null;
+            pieces = pieces.Take(pieces.Length > 1 ? pieces.Length - 1 : 1).ToArray();
+            fileName = string.Join(Path.DirectorySeparatorChar, pieces);
+            //fileName = fileName.Split('.')[0];
+            //fileName = fileName.Replace('.', Path.PathSeparator);
             fileName = $"{fileName}.lark";
             fullPath = Path.Combine(_commonDirectory, fileName);
+            if (!File.Exists(fullPath))
+            {
+                // TODO: This sounds false but is needed for some of our test files.
+                fullPath = Path.Combine(_currentDirectory, fileName); 
+            }
         }
         
         var content = File.ReadAllText(fullPath);
         using var s = new StringReader(content);
-        return EbnfSyntax.Parse(s);
+        return EbnfSyntax.Parse(s, this);
     }
 }
