@@ -17,13 +17,13 @@ public class UnitTest1
 
     private ChatClient CreateClient()
     {
-        var key = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? "NO_KEY";
+        var key = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? "ollama";
         var client = new ChatClient(
-            model: "MODEL_NAME",
+            model: "gpt-oss:20b",
             credential: new ApiKeyCredential(key),
             options: new OpenAIClientOptions
             { 
-                Endpoint = new Uri("http://127.0.0.1:8080/v1")
+                Endpoint = new Uri("http://localhost:11434/v1")
             }
         );
         return client;
@@ -48,12 +48,6 @@ public class UnitTest1
         // Call the location API here.
         return "San Francisco";
     }
-
-    
-    
-    
-    
-    
     
     
     private static string GetCurrentWeather(string location, string unit = "celsius")
@@ -128,13 +122,13 @@ public class UnitTest1
                     messages.Add(new AssistantChatMessage(completion));
 
                     // Then, add a new tool message for each tool call that is resolved.
-                    foreach (ChatToolCall toolCall in completion.ToolCalls)
+                    foreach (var toolCall in completion.ToolCalls)
                     {
                         switch (toolCall.FunctionName)
                         {
                             case nameof(GetCurrentLocation):
                             {
-                                string toolResult = GetCurrentLocation();
+                                var toolResult = GetCurrentLocation();
                                 messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
                                 break;
                             }
@@ -146,9 +140,9 @@ public class UnitTest1
                                 // the model may hallucinate arguments too. Consequently, it is important to do the
                                 // appropriate parsing and validation before calling the function.
                                 using var argumentsJson = JsonDocument.Parse(toolCall.FunctionArguments);
-                                bool hasLocation =
-                                    argumentsJson.RootElement.TryGetProperty("location", out JsonElement location);
-                                bool hasUnit = argumentsJson.RootElement.TryGetProperty("unit", out JsonElement unit);
+                                var hasLocation =
+                                    argumentsJson.RootElement.TryGetProperty("location", out var location);
+                                var hasUnit = argumentsJson.RootElement.TryGetProperty("unit", out var unit);
 
                                 if (!hasLocation)
                                 {
@@ -157,8 +151,8 @@ public class UnitTest1
                                 }
 
                                 var toolResult = hasUnit
-                                    ? GetCurrentWeather(location.GetString(), unit.GetString())
-                                    : GetCurrentWeather(location.GetString());
+                                    ? GetCurrentWeather(location.GetString()!, unit.GetString()!)
+                                    : GetCurrentWeather(location.GetString()!);
                                 messages.Add(new ToolChatMessage(toolCall.Id, toolResult));
                                 break;
                             }
