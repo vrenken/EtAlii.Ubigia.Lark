@@ -30,7 +30,7 @@ public class FileSystemImportSource : IImportSource
         {
             fileName = fileName.TrimStart('.');
             var pieces = fileName.Split('.');
-            var id = pieces.Length > 1 ? pieces[^1] : null;
+            var _ = pieces.Length > 1 ? pieces[^1] : null;
             pieces = pieces.Take(pieces.Length > 1 ? pieces.Length - 1 : 1).ToArray();
             fileName = string.Join(Path.DirectorySeparatorChar, pieces);
             fileName = $"{fileName}.lark";
@@ -44,7 +44,7 @@ public class FileSystemImportSource : IImportSource
         else
         {
             var pieces = fileName.Split('.');
-            var id = pieces.Length > 1 ? pieces[^1] : null;
+            var _ = pieces.Length > 1 ? pieces[^1] : null;
             pieces = pieces.Take(pieces.Length > 1 ? pieces.Length - 1 : 1).ToArray();
             fileName = string.Join(Path.DirectorySeparatorChar, pieces);
             //fileName = fileName.Split('.')[0];
