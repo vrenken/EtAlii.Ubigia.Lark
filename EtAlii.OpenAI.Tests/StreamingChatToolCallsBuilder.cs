@@ -1,7 +1,7 @@
 ﻿using System.Buffers;
 using OpenAI.Chat;
 
-namespace EtAlii.Ubigia.OpenAI.Tests;
+namespace EtAlii.OpenAI.Tests;
 
     public class StreamingChatToolCallsBuilder
     {

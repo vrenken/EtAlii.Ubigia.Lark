@@ -1,4 +1,4 @@
-namespace EtAlii.Ubigia.OpenAI.Tests;
+namespace EtAlii.OpenAI.Tests;
 
 public record SidcRefinementResult
 {

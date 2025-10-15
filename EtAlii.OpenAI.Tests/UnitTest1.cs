@@ -3,7 +3,7 @@ using OpenAI;
 using OpenAI.Chat;
 using Xunit.Abstractions;
 
-namespace EtAlii.Ubigia.OpenAI.Tests;
+namespace EtAlii.OpenAI.Tests;
 
 public class UnitTest1
 {

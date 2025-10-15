@@ -3,7 +3,7 @@ using System.Text.Json;
 using OpenAI.Chat;
 using Xunit.Abstractions;
 
-namespace EtAlii.Ubigia.OpenAI.Tests;
+namespace EtAlii.OpenAI.Tests;
 
 public partial class ChatCompletionProcessor
 {

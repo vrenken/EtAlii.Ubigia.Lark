@@ -1,6 +1,6 @@
 ﻿using OpenAI.Chat;
 
-namespace EtAlii.Ubigia.OpenAI.Tests;
+namespace EtAlii.OpenAI.Tests;
 
 public partial class ChatCompletionProcessor
 {
