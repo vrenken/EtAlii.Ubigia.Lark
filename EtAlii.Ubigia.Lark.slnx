@@ -1,4 +1,10 @@
 ﻿<Solution>
+  <Folder Name="/_Global/">
+    <File Path=".gitignore" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="global.json" />
+  </Folder>
   <Project Path="EtAlii.OpenAI.Tests\EtAlii.OpenAI.Tests.csproj" Type="Classic C#" />
   <Project Path="EtAlii.OpenAI\EtAlii.OpenAI.csproj" Type="Classic C#" />
   <Project Path="EtAlii.Text.Lark.Generators\EtAlii.Text.Lark.Generators.Sample\EtAlii.Text.Lark.Generators.Sample.csproj" Type="Classic C#" />
