@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
 using OpenAI.Chat;
-using Xunit.Abstractions;
 
 namespace EtAlii.OpenAI.Tests;
 
