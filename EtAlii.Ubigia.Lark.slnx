@@ -6,6 +6,4 @@
   <Project Path="EtAlii.Text.Lark.Generators\EtAlii.Text.Lark.Generators\EtAlii.Text.Lark.Generators.csproj" Type="Classic C#" />
   <Project Path="EtAlii.Text.Lark.Tests\EtAlii.Text.Lark.Tests.csproj" Type="Classic C#" />
   <Project Path="EtAlii.Text.Lark\EtAlii.Text.Lark.csproj" Type="Classic C#" />
-  <Project Path="EtAlii.Ubigia.Lark.Tests\EtAlii.Ubigia.Lark.Tests.csproj" Type="Classic C#" />
-  <Project Path="EtAlii.Ubigia.Lark\EtAlii.Ubigia.Lark.csproj" Type="Classic C#" />
 </Solution>
