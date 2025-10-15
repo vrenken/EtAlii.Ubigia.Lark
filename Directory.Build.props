@@ -4,6 +4,27 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <LangVersion>14</LangVersion>
+        <LangVersion>13</LangVersion>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+        <WarningsAsErrors>true</WarningsAsErrors>
     </PropertyGroup>
+    
+    <!-- Set properties if project name ends with ".Tests" -->
+    <Choose>
+        <When Condition="$(MSBuildProjectName.ToLower().EndsWith('.tests'))">
+            <PropertyGroup>
+                <IsTestProject>true</IsTestProject>
+            </PropertyGroup>
+        </When>
+        <Otherwise>
+            <PropertyGroup>
+                <IsTestProject>false</IsTestProject>
+            </PropertyGroup>
+        </Otherwise>
+    </Choose>
+
+    <ItemGroup Condition="'$(IsTestProject)' == 'true'">
+        <Using Include="Xunit"/>
+    </ItemGroup>
+
 </Project>
