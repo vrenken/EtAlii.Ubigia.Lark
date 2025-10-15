@@ -1,13 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-    </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Eto.Parse" Version="1.6.0" />
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
+        <PackageReference Include="Antlr4BuildTasks" Version="12.10.0" PrivateAssets="all" IncludeAssets="build" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Antlr4 Include="_Old\Syntax\Antlr\*.g4" >
+            <Listener>true</Listener>
+            <Visitor>true</Visitor>
+            <GAtn>true</GAtn>
+            <Package>EtAlii.Text.Lark._Old</Package>
+            <Error>true</Error>
+        </Antlr4>
+    </ItemGroup>
+    
 </Project>
