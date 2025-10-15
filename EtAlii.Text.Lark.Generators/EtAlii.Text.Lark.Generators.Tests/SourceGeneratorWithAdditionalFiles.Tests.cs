@@ -30,7 +30,7 @@ Customer";
         var compilation = CSharpCompilation.Create(nameof(SourceGeneratorWithAdditionalFilesTests));
 
         // Run generators. Don't forget to use the new compilation rather than the previous one.
-        driver.RunGeneratorsAndUpdateCompilation(compilation, out var newCompilation, out _);
+        driver.RunGeneratorsAndUpdateCompilation(compilation, out var newCompilation, out _, TestContext.Current.CancellationToken);
 
         // Retrieve all files in the compilation.
         var generatedFiles = newCompilation.SyntaxTrees
