@@ -4,6 +4,7 @@
     <File Path="Directory.Build.props" />
     <File Path="Directory.Build.targets" />
     <File Path="global.json" />
+    <File Path="Directory.Packages.props" />
   </Folder>
   <Project Path="EtAlii.OpenAI.Tests\EtAlii.OpenAI.Tests.csproj" Type="Classic C#" />
   <Project Path="EtAlii.OpenAI\EtAlii.OpenAI.csproj" Type="Classic C#" />
