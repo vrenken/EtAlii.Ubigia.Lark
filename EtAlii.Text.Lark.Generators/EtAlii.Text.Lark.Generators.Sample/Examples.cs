@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Entities;
 
 namespace EtAlii.Text.Lark.Generators.Sample;
