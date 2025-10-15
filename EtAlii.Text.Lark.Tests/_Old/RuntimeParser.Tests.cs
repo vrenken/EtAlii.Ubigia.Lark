@@ -1,4 +1,6 @@
-﻿namespace EtAlii.Ubigia.Lark.Tests;
+﻿using EtAlii.Text.Lark._Old;
+
+namespace EtAlii.Text.Lark.Tests._Old;
 
 public class RuntimeParserTests
 {

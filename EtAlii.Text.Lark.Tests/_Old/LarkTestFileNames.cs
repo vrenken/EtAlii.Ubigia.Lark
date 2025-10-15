@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace EtAlii.Ubigia.Lark.Tests;
+namespace EtAlii.Text.Lark.Tests._Old;
 
 public class LarkTestFileNames : IEnumerable<object[]>
 {

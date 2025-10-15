@@ -1,10 +1,12 @@
-﻿namespace EtAlii.Ubigia.Lark.Tests;
+﻿using EtAlii.Text.Lark._Old;
 
-public class LarkGrammarTests
+namespace EtAlii.Text.Lark.Tests._Old;
+
+public class EbnfSyntaxTests
 {
     [Theory]
     [ClassData(typeof(LarkTestFileNames))]
-    public void LarkGrammar_Runtime_Parse_File(string fileName)
+    public void EbnfSyntax_Parse_File(string fileName)
     {
         // Arrange.
         var commonDirectory = "_Examples/Common";
@@ -26,18 +28,18 @@ public class LarkGrammarTests
             var expected = File.ReadAllText(expectedFile).TrimEnd();
             Assert.Equal(expected, actual);
         }
-        var txtFile = Path.ChangeExtension(fileName, "txt");
-        if (File.Exists(txtFile))
-        {
-            var parser = new LarkRuntimeParser(syntax, new LarkParserConfiguration
-            {
-                Lexing = LexingMode.Dynamic,
-                Algorithm = ParserAlgorithm.Earley, 
-                CollectAllParses = true
-            });
-            var input = File.ReadAllText(txtFile);
-            var result = parser.Parse(input);
-            Assert.True(result.Success);
-        }
+    }
+    
+    [Fact]
+    public void EbnfSyntax_Parse_File_Common()
+    {
+        // Arrange.
+        var fileName = @"_Examples/Antlr4/common.lark";
+        
+        // Act.
+        var syntax = EbnfSyntax.Parse(fileName);
+
+        // Assert.
+        Assert.NotEmpty(syntax.Items);
     }
 }
