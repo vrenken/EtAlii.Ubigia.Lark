@@ -2,7 +2,7 @@
 
 using System.Text.RegularExpressions;
 
-namespace EtAlii.Ubigia.Lark;
+namespace EtAlii.Text.Lark._Old;
 
 /// <summary>
 /// Translates Python/Lark regex syntax to .NET Regex and options.

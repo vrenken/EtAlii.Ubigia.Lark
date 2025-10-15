@@ -1,4 +1,4 @@
-﻿namespace EtAlii.Ubigia.Lark;
+﻿namespace EtAlii.Text.Lark._Old;
 
 /// <summary>
 /// Configuration for the runtime parser, modeled after Lark's options.

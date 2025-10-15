@@ -1,4 +1,4 @@
-﻿namespace EtAlii.Ubigia.Lark;
+﻿namespace EtAlii.Text.Lark._Old;
 
 /// <summary>
 /// The kind of parse tree node.

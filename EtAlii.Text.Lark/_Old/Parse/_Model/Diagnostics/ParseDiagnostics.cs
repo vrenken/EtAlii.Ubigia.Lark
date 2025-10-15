@@ -1,4 +1,4 @@
-﻿namespace EtAlii.Ubigia.Lark;
+﻿namespace EtAlii.Text.Lark._Old;
 
 /// <summary>
 /// Detailed diagnostics for a parse attempt, similar to Lark.

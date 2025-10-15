@@ -1,6 +1,6 @@
 ﻿// TODO: Apologies, generated using an LLM, probably not the best approach.
 
-namespace EtAlii.Ubigia.Lark;
+namespace EtAlii.Text.Lark._Old;
 
 /// <summary>
 /// Pluggable algorithm surface (Earley/LALR).

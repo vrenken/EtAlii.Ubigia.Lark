@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using Antlr4.Runtime;
 
-namespace EtAlii.Ubigia.Lark;
+namespace EtAlii.Text.Lark._Old;
 
 public partial class EbnfSyntax
 {

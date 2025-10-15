@@ -1,4 +1,4 @@
-﻿namespace EtAlii.Ubigia.Lark;
+﻿namespace EtAlii.Text.Lark._Old;
 
 /// <summary>
 /// Represents a null import source implementation for cases where no importing is required or allowed.

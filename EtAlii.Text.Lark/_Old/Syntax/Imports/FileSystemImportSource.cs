@@ -1,4 +1,4 @@
-﻿namespace EtAlii.Ubigia.Lark;
+﻿namespace EtAlii.Text.Lark._Old;
 
 /// <summary>
 /// Represents an import source for fetching and parsing EBNF syntax files from the file system.

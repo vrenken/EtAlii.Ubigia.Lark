@@ -1,7 +1,8 @@
 ﻿using System.Text.RegularExpressions;
+
 // TODO: Apologies, generated using an LLM, probably not the best approach.
 
-namespace EtAlii.Ubigia.Lark;
+namespace EtAlii.Text.Lark._Old;
 
 internal abstract partial class ParseAlgorithmBase
 {

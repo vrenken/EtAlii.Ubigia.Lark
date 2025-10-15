@@ -3,7 +3,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace EtAlii.Ubigia.Lark;
+namespace EtAlii.Text.Lark._Old;
 
 internal sealed class EarleyParseAlgorithm : ParseAlgorithmBase, IParseAlgorithm
 {

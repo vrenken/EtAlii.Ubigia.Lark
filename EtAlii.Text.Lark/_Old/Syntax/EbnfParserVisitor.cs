@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace EtAlii.Ubigia.Lark;
+namespace EtAlii.Text.Lark._Old;
 
 /// <summary>
 /// Provides a concrete visitor implementation for traversing and processing the parse tree

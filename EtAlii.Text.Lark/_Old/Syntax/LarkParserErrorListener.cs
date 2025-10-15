@@ -1,6 +1,6 @@
 ﻿using Antlr4.Runtime;
 
-namespace EtAlii.Ubigia.Lark;
+namespace EtAlii.Text.Lark._Old;
 
 /// <summary>
 /// Represents a custom error listener for the Lark parser.

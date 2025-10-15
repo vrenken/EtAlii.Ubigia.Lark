@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace EtAlii.Ubigia.Lark;
+namespace EtAlii.Text.Lark._Old;
 
 public partial class EbnfParserVisitor
 {

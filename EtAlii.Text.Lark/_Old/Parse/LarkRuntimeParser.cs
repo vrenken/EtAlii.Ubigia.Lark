@@ -1,6 +1,6 @@
 ﻿// TODO: Apologies, generated using an LLM, probably not the best approach.
 
-namespace EtAlii.Ubigia.Lark;
+namespace EtAlii.Text.Lark._Old;
 
 /// <summary>
 /// Facade for the Lark runtime parser with pluggable algorithms and options.
