@@ -1,7 +1,6 @@
 using Microsoft.CodeAnalysis;
 using EtAlii.Text.Lark.Generators.Tests.Utils;
 using Microsoft.CodeAnalysis.CSharp;
-using Xunit;
 
 namespace EtAlii.Text.Lark.Generators.Tests;
 
