@@ -2,12 +2,12 @@
 
 
     <ItemGroup>
-      <PackageReference Include="Eto.Parse" Version="1.6.0" />
+      <PackageReference Include="Eto.Parse" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
-        <PackageReference Include="Antlr4BuildTasks" Version="12.10.0" PrivateAssets="all" IncludeAssets="build" />
+        <PackageReference Include="Antlr4.Runtime.Standard" />
+        <PackageReference Include="Antlr4BuildTasks" PrivateAssets="all" IncludeAssets="build" />
     </ItemGroup>
 
     <ItemGroup>
