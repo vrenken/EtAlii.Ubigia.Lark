@@ -1,5 +1,9 @@
 ﻿<Project>
 
+    <ItemGroup>
+        <PackageReference Include="JetBrains.Annotations" />
+    </ItemGroup>
+    
     <!-- We want to do a bit of xunit magic. So let's add all test relevant packages in one central place -->
     <ItemGroup Condition="'$(IsTestProject)' == 'true'">
         <PackageReference Include="Scrutor"/>
