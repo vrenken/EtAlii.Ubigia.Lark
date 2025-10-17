@@ -32,7 +32,7 @@ public static class ChatToolEx
     
     public static void SetInvocation(this ChatTool tool, FunctionToolInvocationInfo invocationInfo) => Mappings.GetOrCreateValue(tool)!.Invocation = invocationInfo;
 
-    public static ChatTool CreateFunctionTool<TParam1, TParam2, TResult>(Func<TParam1, TParam2, TResult> function, bool? functionSchemaIsStrict = null)
+    public static ChatTool CreateFunctionTool<TParam1, TParam2, TResult>(Func<TParam1, TParam2, TResult> function)
     {
         if (function is null)
         {
@@ -80,7 +80,7 @@ public static class ChatToolEx
             ["additionalProperties"] = false,
         });
         
-        var ct = ChatTool.CreateFunctionTool(method.Name, functionDescription, functionParameters, functionSchemaIsStrict);
+        var ct = ChatTool.CreateFunctionTool(method.Name, functionDescription, functionParameters, true);
 
         ct.SetInvocation(new FunctionToolInvocationInfo
         {
