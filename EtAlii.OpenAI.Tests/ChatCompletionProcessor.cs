@@ -75,7 +75,7 @@ public partial class ChatCompletionProcessor
                                             break;
                                         }
 
-                                    case nameof(GetCurrentWeather):
+                                    case nameof(GetCurrentWeatherOld):
                                     {
                                         // The arguments that the model wants to use to call the function are specified as a
                                         // stringified JSON object based on the schema defined in the tool definition. Note that
@@ -91,13 +91,13 @@ public partial class ChatCompletionProcessor
                                         }
 
                                         var toolResult = hasUnit
-                                            ? GetCurrentWeather(location.GetString()!, unit.GetString()!)
-                                            : GetCurrentWeather(location.GetString()!);
+                                            ? GetCurrentWeatherOld(location.GetString()!, unit.GetString()!)
+                                            : GetCurrentWeatherOld(location.GetString()!);
                                         history.Add(new ToolChatMessage(toolCall.Id, toolResult));
                                         break;
                                     }
 
-                                    case nameof(GetSidcRefinementOptions):
+                                    case nameof(GetSidcRefinementOptionsManual):
                                     {
                                         using var argumentsJson = JsonDocument.Parse(toolCall.FunctionArguments);
                                         var hasSidc = argumentsJson.RootElement.TryGetProperty("sidc", out var sidc);
@@ -109,8 +109,8 @@ public partial class ChatCompletionProcessor
                                         }
 
                                         var toolResult = hasHint
-                                            ? GetSidcRefinementOptions(sidc.GetString()!, hint.GetString()!)
-                                            : GetSidcRefinementOptions(sidc.GetString()!);
+                                            ? GetSidcRefinementOptionsManual(sidc.GetString()!, hint.GetString()!)
+                                            : GetSidcRefinementOptionsManual(sidc.GetString()!, null!);
                                         var response = JsonSerializer.Serialize(toolResult);
                                         history.Add(new ToolChatMessage(toolCall.Id, response));
                                         break;
@@ -118,8 +118,15 @@ public partial class ChatCompletionProcessor
 
                                     default:
                                         {
+                                            if (ChatToolEx.TryGetInvocationInfo(toolCall, out var invocationInfo))
+                                            {
+                                                var message = toolCall.InvokeOn(invocationInfo);
+                                                history.Add(message);
+                                                break;
+                                            }
+                                            
                                             // Handle other unexpected calls.
-                                            throw new NotImplementedException();
+                                            throw new NotImplementedException($"Unable to find a function to handle tool call {toolCall.FunctionName} with.");
                                         }
                                 }
                             }

@@ -1,10 +1,18 @@
-﻿using OpenAI.Chat;
+﻿using System.ComponentModel;
+using OpenAI.Chat;
 
 namespace EtAlii.OpenAI.Tests;
 
 public partial class ChatCompletionProcessor
 {
-    public static SidcRefinementResult GetSidcRefinementOptions(string prefix, string hint = null!)
+    [Description($"Gets the options with which to complement the provided SIDC code with. If you do not know the code then call this method with a blank string. Also Keep calling this function until the result has the '{nameof(SidcRefinementResult.KeepRefining)}' value is to true.")]
+    public static SidcRefinementResult GetSidcRefinementOptionsAutomatic(
+        [Description("The SIDC as it has already been determined, append one of the options to this code.")]
+        string prefix, 
+        [Description("The general textual description of what the final SIDC should represent.")]
+        string hint) => GetSidcRefinementOptionsManual(prefix, hint);
+
+    public static SidcRefinementResult GetSidcRefinementOptionsManual(string prefix, string hint)
     {
         switch (prefix.Length)
         {
@@ -93,15 +101,17 @@ public partial class ChatCompletionProcessor
             }
         }
 
-        return new SidcRefinementResult()
+        return new SidcRefinementResult
         {
             Options = [],
             KeepRefining = false,
         };
     }
 
-    public static readonly ChatTool GetSidcRefinementOptionsTool = ChatTool.CreateFunctionTool(
-        functionName: nameof(GetSidcRefinementOptions),
+    public static readonly ChatTool GetSidcRefinementOptionsToolAutomatic = ChatToolEx.CreateFunctionTool<string, string, SidcRefinementResult>(function: GetSidcRefinementOptionsAutomatic);
+
+    public static readonly ChatTool GetSidcRefinementOptionsToolManual = ChatTool.CreateFunctionTool(
+        functionName: nameof(GetSidcRefinementOptionsManual),
         functionDescription: $"Gets the options with which to complement the provided SIDC code with. If you do not know the code then call this method with a blank string. Also Keep calling this function until the result has the '{nameof(SidcRefinementResult.KeepRefining)}' value is to true.",
         functionParameters: BinaryData.FromBytes(
             """
