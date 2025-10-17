@@ -1,149 +1,20 @@
-﻿using System.Text;
-using System.Text.Json;
+﻿using System.Text.Json;
 using OpenAI.Chat;
 
 namespace EtAlii.OpenAI.Tests;
 
-public partial class ChatCompletionProcessor
+public partial class TestChatCompletionProcessor : ChatCompletionProcessor
 {
     private readonly ITestOutputHelper _testOutputHelper;
 
-    public ChatCompletionProcessor(ITestOutputHelper testOutputHelper)
+    public TestChatCompletionProcessor(ITestOutputHelper testOutputHelper)
     {
         _testOutputHelper = testOutputHelper;
     }
 
-    public async Task Process(ChatClient client, ChatMessage[] messages, ChatCompletionOptions options)
+    public override async Task<IReadOnlyList<ChatMessage>> Process(ChatClient client, ChatMessage[] messages, ChatCompletionOptions options)
     {
-        var history = new List<ChatMessage>(messages);
-        bool requiresAction;
-
-        do
-        {
-            requiresAction = false;
-            var contentBuilder = new StringBuilder();
-            StreamingChatToolCallsBuilder toolCallsBuilder = new();
-
-            var updatesStream = client.CompleteChatStreamingAsync(history, options);
-
-            await foreach (var update in updatesStream)
-            {
-                // Accumulate the text content as new updates arrive.
-                foreach (var contentPart in update.ContentUpdate)
-                {
-                    contentBuilder.Append(contentPart.Text);
-                }
-
-                // Build the tool calls as new updates arrive.
-                foreach (var toolCallUpdate in update.ToolCallUpdates)
-                {
-                    toolCallsBuilder.Append(toolCallUpdate);
-                }
-
-                switch (update.FinishReason)
-                {
-                    case ChatFinishReason.Stop:
-                        {
-                            // Add the assistant message to the conversation history.
-                            history.Add(new AssistantChatMessage(contentBuilder.ToString()));
-                            break;
-                        }
-
-                    case ChatFinishReason.ToolCalls:
-                        {
-                            // First, collect the accumulated function arguments into complete tool calls to be processed
-                            var toolCalls = toolCallsBuilder.Build();
-
-                            // Next, add the assistant message with tool calls to the conversation history.
-                            AssistantChatMessage assistantMessage = new(toolCalls);
-
-                            if (contentBuilder.Length > 0)
-                            {
-                                assistantMessage.Content.Add(ChatMessageContentPart.CreateTextPart(contentBuilder.ToString()));
-                            }
-                            history.Add(assistantMessage);
-
-                            // Then, add a new tool message for each tool call to be resolved.
-                            foreach (var toolCall in toolCalls)
-                            {
-                                switch (toolCall.FunctionName)
-                                {
-                                    case nameof(GetCurrentLocation):
-                                        {
-                                            var toolResult = GetCurrentLocation();
-                                            history.Add(new ToolChatMessage(toolCall.Id, toolResult));
-                                            break;
-                                        }
-
-                                    case nameof(GetCurrentWeatherOld):
-                                    {
-                                        // The arguments that the model wants to use to call the function are specified as a
-                                        // stringified JSON object based on the schema defined in the tool definition. Note that
-                                        // the model may hallucinate arguments too. Consequently, it is important to do the
-                                        // appropriate parsing and validation before calling the function.
-                                        using var argumentsJson = JsonDocument.Parse(toolCall.FunctionArguments);
-                                        var hasLocation = argumentsJson.RootElement.TryGetProperty("location", out var location);
-                                        var hasUnit = argumentsJson.RootElement.TryGetProperty("unit", out var unit);
-
-                                        if (!hasLocation)
-                                        {
-                                            throw new ArgumentNullException(nameof(location), "The location argument is required.");
-                                        }
-
-                                        var toolResult = hasUnit
-                                            ? GetCurrentWeatherOld(location.GetString()!, unit.GetString()!)
-                                            : GetCurrentWeatherOld(location.GetString()!);
-                                        history.Add(new ToolChatMessage(toolCall.Id, toolResult));
-                                        break;
-                                    }
-
-                                    case nameof(GetSidcRefinementOptionsManual):
-                                    {
-                                        using var argumentsJson = JsonDocument.Parse(toolCall.FunctionArguments);
-                                        var hasSidc = argumentsJson.RootElement.TryGetProperty("sidc", out var sidc);
-                                        var hasHint = argumentsJson.RootElement.TryGetProperty("hint", out var hint);
-
-                                        if (!hasSidc)
-                                        {
-                                            throw new ArgumentNullException(nameof(sidc), "The sidc argument is required.");
-                                        }
-
-                                        var toolResult = hasHint
-                                            ? GetSidcRefinementOptionsManual(sidc.GetString()!, hint.GetString()!)
-                                            : GetSidcRefinementOptionsManual(sidc.GetString()!, null!);
-                                        var response = JsonSerializer.Serialize(toolResult);
-                                        history.Add(new ToolChatMessage(toolCall.Id, response));
-                                        break;
-                                    }
-
-                                    default:
-                                        {
-                                            if (ChatToolEx.TryGetInvocationInfo(toolCall, out var invocationInfo))
-                                            {
-                                                var message = toolCall.InvokeOn(invocationInfo);
-                                                history.Add(message);
-                                                break;
-                                            }
-                                            
-                                            // Handle other unexpected calls.
-                                            throw new NotImplementedException($"Unable to find a function to handle tool call {toolCall.FunctionName} with.");
-                                        }
-                                }
-                            }
-
-                            requiresAction = true;
-                            break;
-                        }
-
-                    case ChatFinishReason.Length: throw new NotImplementedException("Incomplete model output due to MaxTokens parameter or token limit exceeded.");
-                    case ChatFinishReason.ContentFilter: throw new NotImplementedException("Omitted content due to a content filter flag.");
-                    case ChatFinishReason.FunctionCall: throw new NotImplementedException("Deprecated in favor of tool calls.");
-                    default: throw new NotImplementedException(update.FinishReason.ToString());
-                    case null:
-                        break;
-                }
-            }
-        } while (requiresAction);
+        var history = await base.Process(client, messages, options);
 
         foreach (var message in history)
         {
@@ -164,6 +35,68 @@ public partial class ChatCompletionProcessor
                 case ToolChatMessage:
                     // Do not print any tool messages; let the assistant summarize the tool results instead.
                     break;
+            }
+        }
+        return history;
+    }
+
+    protected override void HandleToolCall(ChatToolCall toolCall, IReadOnlyList<ChatMessage> history)
+    {
+        switch (toolCall.FunctionName)
+        {
+            case nameof(GetCurrentLocation):
+                {
+                    var toolResult = GetCurrentLocation();
+                    AddMessage(new ToolChatMessage(toolCall.Id, toolResult), history);
+                    break;
+                }
+
+            case nameof(GetCurrentWeatherOld):
+            {
+                // The arguments that the model wants to use to call the function are specified as a
+                // stringified JSON object based on the schema defined in the tool definition. Note that
+                // the model may hallucinate arguments too. Consequently, it is important to do the
+                // appropriate parsing and validation before calling the function.
+                using var argumentsJson = JsonDocument.Parse(toolCall.FunctionArguments);
+                var hasLocation = argumentsJson.RootElement.TryGetProperty("location", out var location);
+                var hasUnit = argumentsJson.RootElement.TryGetProperty("unit", out var unit);
+
+                if (!hasLocation)
+                {
+                    throw new ArgumentNullException(nameof(location), "The location argument is required.");
+                }
+
+                var toolResult = hasUnit
+                    ? GetCurrentWeatherOld(location.GetString()!, unit.GetString()!)
+                    : GetCurrentWeatherOld(location.GetString()!);
+                AddMessage(new ToolChatMessage(toolCall.Id, toolResult), history);
+
+                break;
+            }
+
+            case nameof(GetSidcRefinementOptionsManual):
+            {
+                using var argumentsJson = JsonDocument.Parse(toolCall.FunctionArguments);
+                var hasSidc = argumentsJson.RootElement.TryGetProperty("sidc", out var sidc);
+                var hasHint = argumentsJson.RootElement.TryGetProperty("hint", out var hint);
+
+                if (!hasSidc)
+                {
+                    throw new ArgumentNullException(nameof(sidc), "The sidc argument is required.");
+                }
+
+                var toolResult = hasHint
+                    ? GetSidcRefinementOptionsManual(sidc.GetString()!, hint.GetString()!)
+                    : GetSidcRefinementOptionsManual(sidc.GetString()!, null!);
+                var response = JsonSerializer.Serialize(toolResult);
+                AddMessage(new ToolChatMessage(toolCall.Id, response), history);
+                break;
+            }
+
+            default:
+            {
+                base.HandleToolCall(toolCall, history);
+                break;
             }
         }
     }

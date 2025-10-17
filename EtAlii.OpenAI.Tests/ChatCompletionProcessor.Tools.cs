@@ -3,7 +3,7 @@ using OpenAI.Chat;
 
 namespace EtAlii.OpenAI.Tests;
 
-public partial class ChatCompletionProcessor
+public partial class TestChatCompletionProcessor
 {
     public static string GetCurrentLocation()
     {
@@ -34,9 +34,7 @@ public partial class ChatCompletionProcessor
         functionDescription: "Get the user's current location"
     );
 
-    public static readonly ChatTool GetCurrentWeatherToolNew = ChatToolEx.CreateFunctionTool<string, string, string>(function: GetCurrentWeatherNew);
-
-    public static readonly ChatTool GetCurrentWeatherToolOld = ChatTool.CreateFunctionTool(
+    public static readonly ChatTool GetCurrentWeatherToolManual = ChatTool.CreateFunctionTool(
         functionName: nameof(GetCurrentWeatherOld),
         functionDescription: "Get the current weather in a given location",
         functionParameters: BinaryData.FromBytes(

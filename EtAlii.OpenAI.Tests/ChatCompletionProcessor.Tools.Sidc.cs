@@ -3,7 +3,7 @@ using OpenAI.Chat;
 
 namespace EtAlii.OpenAI.Tests;
 
-public partial class ChatCompletionProcessor
+public partial class TestChatCompletionProcessor
 {
     [Description($"Gets the options with which to complement the provided SIDC code with. If you do not know the code then call this method with a blank string. Also Keep calling this function until the result has the '{nameof(SidcRefinementResult.KeepRefining)}' value is to true.")]
     public static SidcRefinementResult GetSidcRefinementOptionsAutomatic(
@@ -107,8 +107,6 @@ public partial class ChatCompletionProcessor
             KeepRefining = false,
         };
     }
-
-    public static readonly ChatTool GetSidcRefinementOptionsToolAutomatic = ChatToolEx.CreateFunctionTool<string, string, SidcRefinementResult>(function: GetSidcRefinementOptionsAutomatic);
 
     public static readonly ChatTool GetSidcRefinementOptionsToolManual = ChatTool.CreateFunctionTool(
         functionName: nameof(GetSidcRefinementOptionsManual),
