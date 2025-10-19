@@ -14,25 +14,11 @@ public partial class UnitTest1
         _testOutputHelper = testOutputHelper;
     }
 
-    private ChatClient CreateClient()
-    {
-        var key = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? "ollama";
-        var client = new ChatClient(
-            model: "gpt-oss:20b",
-            credential: new ApiKeyCredential(key),
-            options: new OpenAIClientOptions
-            { 
-                Endpoint = new Uri("http://localhost:11434/v1")
-            }
-        );
-        return client;
-    }
-
     [Fact]
     public void Test1()
     {
         // Arrange.
-        var client = CreateClient();
+        var client = ChatClientFactory.Create();
         
         // Act.
         ChatCompletion completion = client.CompleteChat("Say 'this is a test.'");
@@ -46,7 +32,7 @@ public partial class UnitTest1
     public async Task Test2_Invocation_Manual()
     {
         // Arrange.
-        var client = CreateClient();
+        var client = ChatClientFactory.Create();
         var messages = new ChatMessage[] { new UserChatMessage("What's the weather like today?") };
         var options = new ChatCompletionOptions { Tools = { TestChatCompletionProcessor.GetCurrentLocationTool, TestChatCompletionProcessor.GetCurrentWeatherToolManual } };
         var processor = new TestChatCompletionProcessor(_testOutputHelper);
@@ -59,7 +45,7 @@ public partial class UnitTest1
     public async Task Test2_Invocation_Automatic()
     {
         // Arrange.
-        var client = CreateClient();
+        var client = ChatClientFactory.Create();
         var messages = new ChatMessage[] { new UserChatMessage("What's the weather like today?") };
         var options = new ChatCompletionOptions { Tools = { 
             TestChatCompletionProcessor.GetCurrentLocationTool, 
@@ -75,7 +61,7 @@ public partial class UnitTest1
     public async Task Sidc_Generation_Tank_Manual_01()
     {
         // Arrange.
-        var client = CreateClient();
+        var client = ChatClientFactory.Create();
         var messages = new ChatMessage[] { new UserChatMessage("Please provide me with a SIDC for a friendly tank. Do not provide an explanation but only return the SIDC code.") };
         var options = new ChatCompletionOptions { Tools = { TestChatCompletionProcessor.GetSidcRefinementOptionsToolManual } };
         var processor = new TestChatCompletionProcessor(_testOutputHelper);
@@ -88,7 +74,7 @@ public partial class UnitTest1
     public async Task Sidc_Generation_Tank_Automatic_01()
     {
         // Arrange.
-        var client = CreateClient();
+        var client = ChatClientFactory.Create();
         var messages = new ChatMessage[] { new UserChatMessage("Please provide me with a SIDC for a friendly tank. Do not provide an explanation but only return the SIDC code.") };
         var options = new ChatCompletionOptions { Tools = { ChatToolEx.CreateFunctionTool<string, string, SidcRefinementResult>(function: TestChatCompletionProcessor.GetSidcRefinementOptionsAutomatic) } };
         var processor = new TestChatCompletionProcessor(_testOutputHelper);
@@ -103,7 +89,7 @@ public partial class UnitTest1
     public async Task Sidc_Generation_Aircraft_Manual_01()
     {
         // Arrange.
-        var client = CreateClient();
+        var client = ChatClientFactory.Create();
         var messages = new ChatMessage[] { new UserChatMessage("Please provide me with a SIDC for a hostile aircraft. Do not provide an explanation but only return the SIDC code.") };
         var options = new ChatCompletionOptions { Tools = { TestChatCompletionProcessor.GetSidcRefinementOptionsToolManual } };
         var processor = new TestChatCompletionProcessor(_testOutputHelper);
@@ -116,7 +102,7 @@ public partial class UnitTest1
     public async Task Sidc_Generation_Aircraft_Automatic_01()
     {
         // Arrange.
-        var client = CreateClient();
+        var client = ChatClientFactory.Create();
         var messages = new ChatMessage[] { new UserChatMessage("Please provide me with a SIDC for a hostile aircraft. Do not provide an explanation but only return the SIDC code.") };
         var options = new ChatCompletionOptions { Tools = { ChatToolEx.CreateFunctionTool<string, string, SidcRefinementResult>(function: TestChatCompletionProcessor.GetSidcRefinementOptionsAutomatic) } };
         var processor = new TestChatCompletionProcessor(_testOutputHelper);
