@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using System.ComponentModel;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using OpenAI.Chat;
@@ -31,20 +32,52 @@ public static class ChatToolEx
     public static FunctionToolInvocationInfo GetInvocation(this ChatTool tool) => Mappings.GetOrCreateValue(tool)!.Invocation;
     
     public static void SetInvocation(this ChatTool tool, FunctionToolInvocationInfo invocationInfo) => Mappings.GetOrCreateValue(tool)!.Invocation = invocationInfo;
-
-    public static ChatTool CreateFunctionTool<TParam1, TParam2, TResult>(Func<TParam1, TParam2, TResult> function)
+    
+    public static ChatTool CreateFunctionTool<T>(T instance, Expression<Func<T, Delegate>> expression)
     {
-        if (function is null)
+        return expression.Body switch
         {
-            throw new ArgumentException("No function provided", nameof(function));
+            UnaryExpression { Operand: MethodCallExpression { Object: ConstantExpression { Value: MethodInfo mi } } } => CreateFunctionTool(mi, instance),
+            UnaryExpression { Operand: ConstantExpression { Value: Delegate del } } => CreateFunctionTool(del.Method, instance),
+            _ => throw new InvalidOperationException("Expression does not represent a method group.")
+        };
+    }
+
+    public static ChatTool CreateFunctionTool(Expression<Func<Delegate>> function)
+    {
+        switch (function.Body)
+        {
+            // Handles method group: () => instance.Method
+            case UnaryExpression { Operand: MethodCallExpression { Object: ConstantExpression { Value: MethodInfo mi } } call }:
+            {
+                // MethodInfo wrapped in ConstantExpression
+                var target = GetInstanceFromExpression(call.Arguments[0]);
+                return CreateFunctionTool(mi, target);
+            }
+            // Handles () => instance.Method (MethodGroup converted to delegate)
+            case UnaryExpression { Operand: ConstantExpression { Value: Delegate del } }:
+                return CreateFunctionTool(del.Method, del.Target);
+            default:
+                throw new ArgumentException("Function must be a method call.");
         }
-        
-        var method = function.Method;
-        
+    }
+
+    private static object GetInstanceFromExpression(Expression expr)
+    {
+        if (expr == null) return null;
+
+        // Compile the sub-expression to get its runtime value
+        var lambda = Expression.Lambda(expr);
+        var compiled = lambda.Compile();
+        return compiled.DynamicInvoke();
+    }
+    
+    private static ChatTool CreateFunctionTool(MethodInfo method, object functionInstance)
+    {
         var descriptionAttribute = method.GetCustomAttribute<DescriptionAttribute>(false);
         if (descriptionAttribute is null)
         {
-            throw new ArgumentException($"A description attribute should be provided for method {method.Name} to be registered as a tool.", nameof(function));
+            throw new ArgumentException($"A description attribute should be provided for method {method.Name} to be registered as a tool.", method.Name);
         }
         var functionDescription = descriptionAttribute.Description;
 
@@ -55,21 +88,22 @@ public static class ChatToolEx
         {
             if (parameter.IsOptional)
             {
-                throw new ArgumentException($"Parameter {parameter.Name} on method {method.Name} is optional. This is not supported yet for the method to be registered as a tool.", nameof(function));
+                throw new ArgumentException($"Parameter {parameter.Name} on method {method.Name} is optional. This is not supported yet for the method to be registered as a tool.", method.Name);
             }
             if(parameter.HasDefaultValue)
             {
-                throw new ArgumentException($"Parameter {parameter.Name} on method {method.Name} has a default value. This is not supported yet for the method to be registered as a tool.", nameof(function));
+                throw new ArgumentException($"Parameter {parameter.Name} on method {method.Name} has a default value. This is not supported yet for the method to be registered as a tool.", method.Name);
             }
             descriptionAttribute = parameter.GetCustomAttribute<DescriptionAttribute>(false);
-            if (descriptionAttribute is null)
-            {
-                throw new ArgumentException($"A description attribute should be provided for method {method.Name} to be registered as a tool.", nameof(function));
-            }
+            // if (descriptionAttribute is null)
+            // {
+            //     throw new ArgumentException($"A description attribute should be provided for parameter {parameter.Name} on method {method.Name} to be registered as a tool.", method.Name);
+            // }
 
             var jsonType = JsonParameter.GetJsonType(parameter, method);
 
-            parameterMappings.Add((parameter.Name, jsonType, descriptionAttribute.Description, Parameter: parameter));
+            var parameterDescription = descriptionAttribute?.Description ?? $"The {parameter.Name} parameter.";
+            parameterMappings.Add((parameter.Name, jsonType, parameterDescription, Parameter: parameter));
         }
 
         var functionParameters = BinaryData.FromObjectAsJson(new Dictionary<string, object>
@@ -84,7 +118,7 @@ public static class ChatToolEx
 
         ct.SetInvocation(new FunctionToolInvocationInfo
         {
-            Instance = null,
+            Instance = functionInstance,
             Method = method,
             Parameters = parameters,
         });
