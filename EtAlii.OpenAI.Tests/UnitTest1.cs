@@ -1,6 +1,4 @@
-﻿using System.ClientModel;
-using OpenAI;
-using OpenAI.Chat;
+﻿using OpenAI.Chat;
 using ChatMessage = OpenAI.Chat.ChatMessage;
 
 namespace EtAlii.OpenAI.Tests;
@@ -49,7 +47,7 @@ public partial class UnitTest1
         var messages = new ChatMessage[] { new UserChatMessage("What's the weather like today?") };
         var options = new ChatCompletionOptions { Tools = { 
             TestChatCompletionProcessor.GetCurrentLocationTool, 
-            ChatToolEx.CreateFunctionTool<string, string, string>(function: TestChatCompletionProcessor.GetCurrentWeatherNew) } };
+            ChatToolEx.CreateFunctionTool(() => TestChatCompletionProcessor.GetCurrentWeatherNew) } };
         var processor = new TestChatCompletionProcessor(_testOutputHelper);
 
         // Act.
@@ -63,7 +61,7 @@ public partial class UnitTest1
         // Arrange.
         var client = ChatClientFactory.Create();
         var messages = new ChatMessage[] { new UserChatMessage("Please provide me with a SIDC for a friendly tank. Do not provide an explanation but only return the SIDC code.") };
-        var options = new ChatCompletionOptions { Tools = { TestChatCompletionProcessor.GetSidcRefinementOptionsToolManual } };
+        var options = new ChatCompletionOptions { Tools = { SidcTestTools.GetSidcRefinementOptionsToolManual } };
         var processor = new TestChatCompletionProcessor(_testOutputHelper);
 
         // Act.
@@ -76,7 +74,7 @@ public partial class UnitTest1
         // Arrange.
         var client = ChatClientFactory.Create();
         var messages = new ChatMessage[] { new UserChatMessage("Please provide me with a SIDC for a friendly tank. Do not provide an explanation but only return the SIDC code.") };
-        var options = new ChatCompletionOptions { Tools = { ChatToolEx.CreateFunctionTool<string, string, SidcRefinementResult>(function: TestChatCompletionProcessor.GetSidcRefinementOptionsAutomatic) } };
+        var options = new ChatCompletionOptions { Tools = { ChatToolEx.CreateFunctionTool(() => SidcTestTools.GetSidcRefinementOptionsAutomatic) } };
         var processor = new TestChatCompletionProcessor(_testOutputHelper);
 
         // Act.
@@ -91,7 +89,7 @@ public partial class UnitTest1
         // Arrange.
         var client = ChatClientFactory.Create();
         var messages = new ChatMessage[] { new UserChatMessage("Please provide me with a SIDC for a hostile aircraft. Do not provide an explanation but only return the SIDC code.") };
-        var options = new ChatCompletionOptions { Tools = { TestChatCompletionProcessor.GetSidcRefinementOptionsToolManual } };
+        var options = new ChatCompletionOptions { Tools = { SidcTestTools.GetSidcRefinementOptionsToolManual } };
         var processor = new TestChatCompletionProcessor(_testOutputHelper);
 
         // Act.
@@ -104,7 +102,7 @@ public partial class UnitTest1
         // Arrange.
         var client = ChatClientFactory.Create();
         var messages = new ChatMessage[] { new UserChatMessage("Please provide me with a SIDC for a hostile aircraft. Do not provide an explanation but only return the SIDC code.") };
-        var options = new ChatCompletionOptions { Tools = { ChatToolEx.CreateFunctionTool<string, string, SidcRefinementResult>(function: TestChatCompletionProcessor.GetSidcRefinementOptionsAutomatic) } };
+        var options = new ChatCompletionOptions { Tools = { ChatToolEx.CreateFunctionTool(() => SidcTestTools.GetSidcRefinementOptionsAutomatic) } };
         var processor = new TestChatCompletionProcessor(_testOutputHelper);
 
         // Act.
