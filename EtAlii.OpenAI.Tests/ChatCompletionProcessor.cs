@@ -74,7 +74,7 @@ public partial class TestChatCompletionProcessor : ChatCompletionProcessor
                 break;
             }
 
-            case nameof(GetSidcRefinementOptionsManual):
+            case nameof(SidcTestTools.GetSidcRefinementOptionsManual):
             {
                 using var argumentsJson = JsonDocument.Parse(toolCall.FunctionArguments);
                 var hasSidc = argumentsJson.RootElement.TryGetProperty("sidc", out var sidc);
@@ -86,8 +86,8 @@ public partial class TestChatCompletionProcessor : ChatCompletionProcessor
                 }
 
                 var toolResult = hasHint
-                    ? GetSidcRefinementOptionsManual(sidc.GetString()!, hint.GetString()!)
-                    : GetSidcRefinementOptionsManual(sidc.GetString()!, null!);
+                    ? SidcTestTools.GetSidcRefinementOptionsManual(sidc.GetString()!, hint.GetString()!)
+                    : SidcTestTools.GetSidcRefinementOptionsManual(sidc.GetString()!, null!);
                 var response = JsonSerializer.Serialize(toolResult);
                 AddMessage(new ToolChatMessage(toolCall.Id, response), history);
                 break;
